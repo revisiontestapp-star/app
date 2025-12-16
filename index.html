@@ -29,6 +29,7 @@
             display: flex;
             flex-direction: column;
             user-select: none;
+            overflow-x: hidden;
         }
 
         /* --- 2. COMPONENTS --- */
@@ -59,6 +60,13 @@
         }
         .btn-primary:active { transform: scale(0.99); background: var(--secondary-blue); }
         
+        .btn-danger {
+            background: #e74c3c;
+            color: white; width: 100%; padding: 14px;
+            border: none; border-radius: 8px; font-weight: 600;
+            margin-top: 10px; cursor: pointer;
+        }
+        
         .btn-link {
             background: none; border: none;
             color: var(--primary-blue); font-weight: 600;
@@ -78,9 +86,10 @@
         /* Phone Group */
         .phone-group { display: flex; gap: 10px; }
         .phone-select {
-            width: 110px; padding: 14px;
+            width: 90px; padding: 14px 5px;
             border: 1px solid var(--input-border); border-radius: 8px;
-            background: white; font-size: 15px; color: var(--text-dark);
+            background: white; font-size: 14px; color: var(--text-dark);
+            text-align: center;
         }
 
         /* --- 3. AUTH SECTION --- */
@@ -112,7 +121,7 @@
             cursor: pointer; color: #999; font-size: 18px;
         }
 
-        /* --- 4. DASHBOARD SECTION (Corporate Style) --- */
+        /* --- 4. DASHBOARD SECTION --- */
         #dashboard-section {
             padding: 20px; padding-bottom: 50px;
             width: 100%; display: flex; justify-content: center;
@@ -120,7 +129,6 @@
         }
         .dashboard-wrapper { width: 100%; max-width: 900px; }
         
-        /* Dashboard Header */
         .dash-header {
             display: flex; align-items: center; justify-content: space-between;
             margin-bottom: 30px; background: white;
@@ -131,17 +139,15 @@
         .user-info h2 { margin: 0; font-size: 18px; font-weight: 700; color: var(--text-dark); }
         .user-info p { margin: 4px 0 0; font-size: 13px; color: var(--text-grey); }
         
-        /* Grid */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 20px;
         }
         
-        /* Modern Clean Cards */
         .course-card {
             background: white; border-radius: 12px;
-            padding: 25px 15px;
+            padding: 20px 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.03);
             border: 1px solid #eee;
             cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -154,7 +160,6 @@
             border-color: rgba(45, 117, 200, 0.3);
         }
         
-        /* SVG Icons */
         .icon-box {
             width: 48px; height: 48px;
             margin-bottom: 15px;
@@ -168,10 +173,7 @@
             flex-grow: 1;
         }
         
-        /* Minimal Status Indicator */
-        .status-dot {
-            height: 4px; width: 40px; border-radius: 2px;
-        }
+        .status-dot { height: 4px; width: 40px; border-radius: 2px; }
         .dot-locked { background-color: #E0E0E0; }
         .dot-open { background-color: var(--success-green); }
         
@@ -195,6 +197,23 @@
             background: white; padding: 30px; border-radius: 16px;
             width: 100%; max-width: 380px; text-align: center;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        /* --- 6. MOBILE FIXES --- */
+        @media (max-width: 480px) {
+            .auth-wrapper { padding: 30px 20px; }
+            #auth-section { padding: 15px; }
+            .brand-title { font-size: 20px; }
+            
+            .dash-header {
+                flex-direction: column; text-align: center; gap: 15px; padding: 20px;
+            }
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 12px;
+            }
+            .course-name { font-size: 14px; }
+            .modal-content { padding: 25px 20px; }
         }
     </style>
 </head>
@@ -222,7 +241,7 @@
                 
                 <div style="display: flex; justify-content: space-between; margin-top: 18px; font-size: 13px;">
                     <span style="color: #666">No account? <strong onclick="switchAuth('signup')" style="color:var(--primary-blue); cursor:pointer">Sign Up</strong></span>
-                    <strong onclick="showForgotModal()" style="color:var(--highlight-orange); cursor:pointer">Forgot Password?</strong>
+                    <strong onclick="showForgotModal()" style="color:var(--highlight-orange); cursor:pointer">Forgot?</strong>
                 </div>
             </div>
 
@@ -270,8 +289,7 @@
                 <img src="https://lh3.googleusercontent.com/d/1yFivjS463NWwftZxyij-lmK3wM0vOVmt" style="width: 40px; height: 40px; border-radius: 50%;" alt="Profile">
             </div>
 
-            <div class="grid-container" id="course-grid">
-                </div>
+            <div class="grid-container" id="course-grid"></div>
             
             <div style="text-align: center; margin-top: 40px;">
                  <button class="btn-link" onclick="handleLogout()" style="color: #e74c3c; opacity:0.8;">Sign Out</button>
@@ -302,14 +320,28 @@
         </div>
     </div>
 
+    <div id="exit-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:var(--text-dark)">Exit App?</h3>
+            <p style="color:#666; font-size:14px; margin-bottom:20px;">
+                You are about to close the app. Are you sure?
+            </p>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-primary" style="background:#eee; color:#333; box-shadow:none;" onclick="closeModal('exit-modal')">Cancel</button>
+                <button class="btn-danger" onclick="closeApp()">Yes, Exit</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // CONFIG
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyH8Jv7hR9V-TEOgh5T0ALnmNP2UWcpDkB4MRZmX6XpaeVyTs7xV3oPR9prgodNVrXs/exec";
+        // --- CONFIG ---
+        // REPLACE THIS URL WITH YOUR NEW DEPLOYED SCRIPT URL
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxojtkvbUnaD72u-ldk8Qn1C4XxpulLhT5biScXNolxHhETHEc5FPh2jEKBpLpweMzK/exec";
         
         let deviceId = localStorage.getItem('device_id') || 'web_' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('device_id', deviceId);
 
-        // SVG Icons
+        // Icons
         const ICONS = {
             medical: '<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>',
             engineer: '<svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>',
@@ -334,7 +366,7 @@
 
         let userPermissions = {};
 
-        // UTILS
+        // --- UTILS ---
         function el(id) { return document.getElementById(id); }
         function show(id) { el(id).classList.remove('hidden'); }
         function hide(id) { el(id).classList.add('hidden'); }
@@ -343,45 +375,58 @@
             const x = el(id);
             x.type = x.type === "password" ? "text" : "password";
         }
-
         function switchAuth(type) {
             type === 'signup' ? (hide('login-form'), show('signup-form')) : (hide('signup-form'), show('login-form'));
         }
+        function showForgotModal() { show('forgot-modal'); }
+        function closeModal(id) { hide(id); }
 
-        // --- SIGNUP LOGIC (Lowercase Email + Compulsory Fields) ---
+        // --- BACK BUTTON HANDLING ---
+        function setupBackExit() {
+            // Push a state so the back button has something to "pop"
+            history.pushState(null, null, location.href);
+            
+            // Listen for the Back Button
+            window.onpopstate = function () {
+                // If dashboard is visible, intercept back button
+                if (!el('dashboard-section').classList.contains('hidden')) {
+                    history.pushState(null, null, location.href); // Push state again to stay on page
+                    show('exit-modal');
+                }
+            };
+        }
+
+        function closeApp() {
+            // Attempt standard window close
+            window.close();
+            // Fallback for browsers/WebViews that block window.close()
+            document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#333;color:white;'><h2>App Closed. You can close this tab.</h2></div>";
+            if(navigator.app) {
+                navigator.app.exitApp(); // For Android WebViews/Cordova
+            }
+        }
+
+        // --- AUTH LOGIC ---
         function handleSignup() {
             const name = el('signup-name').value.trim();
-            // Force Lowercase for Email
             const email = el('signup-email').value.trim().toLowerCase();
             const pass = el('signup-pass').value.trim();
             const countryCode = el('country-code').value;
             const phoneNum = el('signup-phone').value.trim();
 
-            if(!name || !email || !pass || !phoneNum || !countryCode) {
-                return alert("All fields are mandatory.");
-            }
-
-            const fullPhone = countryCode + phoneNum;
+            if(!name || !email || !pass || !phoneNum || !countryCode) return alert("All fields are mandatory.");
 
             apiCall({ 
                 action: 'signup', name: name, email: email, 
-                phone: fullPhone, password: pass, deviceId: deviceId 
+                phone: countryCode + phoneNum, password: pass, deviceId: deviceId 
             }, (res) => {
-                if(res.status === 'success') {
-                    alert("Account Created! Please Sign In.");
-                    switchAuth('login');
-                } else {
-                    alert(res.message);
-                }
+                res.status === 'success' ? (alert("Account Created!"), switchAuth('login')) : alert(res.message);
             });
         }
 
-        // --- LOGIN LOGIC (Lowercase Email) ---
         function handleLogin() {
-            // Force Lowercase for Email match
             const email = el('login-email').value.trim().toLowerCase();
             const pass = el('login-pass').value.trim();
-            
             if(!email || !pass) return alert("Enter email and password.");
             
             apiCall({ action: 'login', email: email, password: pass, deviceId: deviceId }, (res) => {
@@ -396,22 +441,30 @@
             });
         }
 
-        // --- MODERN DASHBOARD RENDERER ---
+        function handleLogout() {
+            const email = localStorage.getItem('user_email');
+            apiCall({ action: 'logout', email: email }, () => {
+                localStorage.removeItem('user_email');
+                localStorage.removeItem('device_id');
+                location.reload();
+            });
+        }
+
+        // --- DASHBOARD LOGIC ---
         function loadDashboard() {
             hide('auth-section');
             show('dashboard-section');
+            setupBackExit(); // Enable Back Button Intercept
             
             const grid = el('course-grid');
             grid.innerHTML = "";
             
             COURSES.forEach(course => {
                 const isUnlocked = userPermissions[course.id] === true;
-                
                 const card = document.createElement('div');
                 card.className = 'course-card';
                 card.onclick = () => checkPermission(course.id, course.name);
                 
-                // UPDATED LABEL: "ENTER" + Arrow
                 card.innerHTML = `
                     <div class="icon-box">${course.icon}</div>
                     <div class="course-name">${course.name}</div>
@@ -424,18 +477,13 @@
             });
         }
 
-        function checkPermission(courseKey, courseName) {
-            if (userPermissions[courseKey] === true) {
-                window.location.href = courseKey + ".html";
+        function checkPermission(id, name) {
+            if (userPermissions[id] === true) {
+                window.location.href = id + ".html";
             } else {
-                el('paywall-course-name').innerText = courseName;
+                el('paywall-course-name').innerText = name;
                 show('paywall-modal');
             }
-        }
-
-        function handleLogout() {
-            localStorage.removeItem('user_email');
-            location.reload();
         }
 
         function apiCall(data, cb) {
@@ -444,13 +492,11 @@
                 method: 'POST', body: JSON.stringify(data)
             }).then(r => r.json()).then(d => {
                 hide('loading-overlay'); cb(d);
-            }).catch(e => {
+            }).catch(() => {
                 hide('loading-overlay'); alert("Connection error.");
             });
         }
-
-        function showForgotModal() { show('forgot-modal'); }
-        function closeModal(id) { hide(id); }
+        
         document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
