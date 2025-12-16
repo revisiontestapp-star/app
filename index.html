@@ -106,11 +106,13 @@
         }
         
         .logo-container { text-align: center; margin-bottom: 35px; }
+        
+        /* UPDATED: Removed Shadow from Logo */
         .app-logo {
             width: 72px; height: 72px;
             border-radius: 50%;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             object-fit: cover; margin-bottom: 15px;
+            box-shadow: none; /* Shadow removed */
         }
         .brand-title { color: var(--text-dark); font-size: 22px; font-weight: 700; margin: 0; }
         .brand-subtitle { color: var(--text-grey); font-size: 13px; margin-top: 6px; }
@@ -206,7 +208,12 @@
             .brand-title { font-size: 20px; }
             
             .dash-header {
-                flex-direction: column; text-align: center; gap: 15px; padding: 20px;
+                /* Sign out stays right, Header in Row */
+                flex-direction: row; 
+                align-items: center;
+                text-align: left; 
+                gap: 15px; 
+                padding: 15px;
             }
             .grid-container {
                 grid-template-columns: repeat(2, 1fr); 
@@ -286,26 +293,39 @@
                     <h2 id="user-name-display">Welcome Back</h2>
                     <p>Select a course to proceed</p>
                 </div>
-                <img src="https://lh3.googleusercontent.com/d/1yFivjS463NWwftZxyij-lmK3wM0vOVmt" style="width: 40px; height: 40px; border-radius: 50%;" alt="Profile">
+                <div>
+                    <button class="btn-link" onclick="handleLogout()" style="color: #e74c3c; font-weight: 700; font-size: 13px;">Sign Out</button>
+                </div>
             </div>
 
             <div class="grid-container" id="course-grid"></div>
-            
-            <div style="text-align: center; margin-top: 40px;">
-                 <button class="btn-link" onclick="handleLogout()" style="color: #e74c3c; opacity:0.8;">Sign Out</button>
-            </div>
         </div>
     </div>
 
     <div id="forgot-modal" class="modal hidden">
         <div class="modal-content">
             <h3 style="margin-top:0; color:var(--text-dark)">Reset Password</h3>
-            <p style="color:#666; font-size:14px; line-height:1.6;">Contact support to recover your account.</p>
-            <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin:20px 0; text-align:left; font-size:14px;">
-                <div style="margin-bottom:8px">📧 revisiontestapp@gmail.com</div>
-                <div>📞 +91 8754955367</div>
+            
+            <div id="forgot-step-1">
+                <p style="color:#666; font-size:14px; margin-bottom:15px; line-height: 1.5;">Enter your email to request a reset code.</p>
+                <div class="input-group">
+                    <input type="email" id="forgot-email" class="input-field" placeholder="Email Address">
+                </div>
+                <button class="btn-primary" onclick="handleForgotRequest()">Request Code</button>
             </div>
-            <button class="btn-primary" style="background:#eee; color:#333; box-shadow:none;" onclick="closeModal('forgot-modal')">Close</button>
+
+            <div id="forgot-step-2" class="hidden">
+                <p style="color:#666; font-size:14px; margin-bottom:15px; line-height: 1.5;">Enter the 5-digit code sent to you and your new password.</p>
+                <div class="input-group">
+                    <input type="text" id="forgot-code" class="input-field" placeholder="5-Digit Code" maxlength="5">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="reset-pass" class="input-field" placeholder="New Password">
+                </div>
+                <button class="btn-primary" onclick="handleResetConfirm()">Change Password</button>
+            </div>
+
+            <button class="btn-link" style="margin-top:15px; color:#666;" onclick="closeModal('forgot-modal'); resetForgotModal();">Cancel</button>
         </div>
     </div>
 
@@ -383,26 +403,20 @@
 
         // --- BACK BUTTON HANDLING ---
         function setupBackExit() {
-            // Push a state so the back button has something to "pop"
             history.pushState(null, null, location.href);
-            
-            // Listen for the Back Button
             window.onpopstate = function () {
-                // If dashboard is visible, intercept back button
                 if (!el('dashboard-section').classList.contains('hidden')) {
-                    history.pushState(null, null, location.href); // Push state again to stay on page
+                    history.pushState(null, null, location.href);
                     show('exit-modal');
                 }
             };
         }
 
         function closeApp() {
-            // Attempt standard window close
             window.close();
-            // Fallback for browsers/WebViews that block window.close()
             document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#333;color:white;'><h2>App Closed. You can close this tab.</h2></div>";
             if(navigator.app) {
-                navigator.app.exitApp(); // For Android WebViews/Cordova
+                navigator.app.exitApp();
             }
         }
 
@@ -433,7 +447,11 @@
                 if(res.status === 'success') {
                     userPermissions = res.permissions;
                     localStorage.setItem('user_email', email);
-                    el('user-name-display').innerText = "Hello, Student"; 
+                    
+                    // Show First Name
+                    const firstName = res.name ? res.name.split(' ')[0] : 'Student';
+                    el('user-name-display').innerText = "Hello, " + firstName;
+                    
                     loadDashboard();
                 } else {
                     alert(res.message);
@@ -447,6 +465,51 @@
                 localStorage.removeItem('user_email');
                 localStorage.removeItem('device_id');
                 location.reload();
+            });
+        }
+
+        // --- FORGOT PASSWORD LOGIC ---
+        function resetForgotModal() {
+            show('forgot-step-1');
+            hide('forgot-step-2');
+            el('forgot-email').value = '';
+            el('forgot-code').value = '';
+            el('reset-pass').value = '';
+        }
+
+        function handleForgotRequest() {
+            const email = el('forgot-email').value.trim().toLowerCase();
+            if(!email) return alert("Please enter your email.");
+
+            apiCall({ action: 'forgot_request', email: email }, (res) => {
+                if(res.status === 'success') {
+                    hide('forgot-step-1');
+                    show('forgot-step-2');
+                    alert(res.message);
+                } else {
+                    alert(res.message);
+                }
+            });
+        }
+
+        function handleResetConfirm() {
+            const email = el('forgot-email').value.trim().toLowerCase();
+            const code = el('forgot-code').value.trim();
+            const newPass = el('reset-pass').value.trim();
+
+            if(!code || !newPass) return alert("Enter code and new password.");
+
+            apiCall({ 
+                action: 'reset_confirm', email: email,
+                code: code, newPassword: newPass
+            }, (res) => {
+                if(res.status === 'success') {
+                    alert(res.message);
+                    closeModal('forgot-modal');
+                    resetForgotModal();
+                } else {
+                    alert(res.message);
+                }
             });
         }
 
