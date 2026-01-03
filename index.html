@@ -29,7 +29,7 @@
 
         .container {
             background: white;
-            padding: 2.5rem;
+            padding: 2rem;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); 
             width: 100%;
@@ -39,9 +39,39 @@
             position: relative;
         }
 
-        /* --- LOGO & HEADER --- */
+        /* --- DASHBOARD HEADER (New Layout) --- */
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dash-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--dark-blue);
+            margin: 0;
+        }
+
+        .logout-btn {
+            font-size: 0.85rem;
+            color: #dc2626;
+            cursor: pointer;
+            font-weight: 600;
+            background: none;
+            border: none;
+            padding: 0;
+            width: auto; /* Override default button width */
+            margin: 0;
+        }
+        .logout-btn:hover { text-decoration: underline; }
+
+        /* --- MAIN LOGO (Login Screen) --- */
         .app-logo {
-            width: 120px; 
+            width: 100px; 
             height: auto;
             margin-bottom: 0.5rem;
             display: block;
@@ -49,8 +79,8 @@
             margin-right: auto;
         }
 
-        /* Title below Logo */
-        .app-title {
+        /* Title on Login Screen */
+        .main-title {
             font-size: 1.5rem;
             font-weight: 800;
             color: var(--dark-blue);
@@ -64,15 +94,12 @@
         /* --- FORMS --- */
         label { display: block; text-align: left; margin-bottom: 5px; color: var(--dark-blue); font-weight: 600; font-size: 0.9rem; }
 
-        .input-group {
-            position: relative;
-            margin-bottom: 15px;
-        }
+        .input-group { position: relative; margin-bottom: 15px; }
 
         input {
             width: 100%;
             padding: 12px;
-            padding-right: 40px; /* Space for eye icon */
+            padding-right: 40px; 
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             box-sizing: border-box;
@@ -81,7 +108,6 @@
         }
         input:focus { border-color: var(--blue); outline: none; }
 
-        /* --- PASSWORD TOGGLE ICON --- */
         .toggle-password {
             position: absolute;
             right: 12px;
@@ -95,7 +121,7 @@
         .toggle-password:hover { color: var(--blue); }
 
         /* --- BUTTONS --- */
-        button {
+        button.action-btn {
             width: 100%;
             padding: 14px;
             background: linear-gradient(135deg, var(--blue), var(--green));
@@ -108,7 +134,7 @@
             transition: transform 0.2s, box-shadow 0.2s;
             margin-bottom: 10px;
         }
-        button:hover { 
+        button.action-btn:hover { 
             transform: translateY(-2px); 
             box-shadow: 0 4px 10px rgba(0, 160, 227, 0.3);
         }
@@ -132,6 +158,7 @@
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 600;
+            width: 100%; /* Ensure full width in grid */
         }
         .course-btn:hover { 
             background: var(--blue); color: white; transform: translateY(-2px);
@@ -141,8 +168,21 @@
         .link { color: var(--dark-blue); cursor: pointer; text-decoration: none; font-size: 0.9rem; display: block; margin-top: 15px; }
         .link:hover { text-decoration: underline; color: var(--orange); }
 
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         .error { color: #dc2626; font-size: 0.9rem; margin-top: 10px; font-weight: bold;}
+        
+        /* Spinner for course check */
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
     </style>
 </head>
@@ -150,9 +190,9 @@
 
     <div class="container">
         
-        <div id="app-header">
+        <div id="main-header">
             <img src="https://lh3.googleusercontent.com/d/1LGuphhLdW2lTGeyZoY_ZUiyvEkl3mzfM" alt="Logo" class="app-logo">
-            <h1 class="app-title">Revision Test</h1>
+            <h1 class="main-title">Revision Test</h1>
         </div>
 
         <div id="view-login">
@@ -170,7 +210,7 @@
                 <span class="toggle-password" onclick="togglePass('login-pass')">👁️</span>
             </div>
             
-            <button onclick="doLogin()" id="btnLogin">Login</button>
+            <button onclick="doLogin()" id="btnLogin" class="action-btn">Login</button>
             <p id="msg-login" class="error"></p>
 
             <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
@@ -180,23 +220,25 @@
         </div>
 
         <div id="view-dashboard" class="hidden">
-            <h2>Select Your Exam</h2>
-            <p>Choose a subject to start revising</p>
+            <div class="dash-header">
+                <span class="dash-title">Revision Test</span>
+                <button class="logout-btn" onclick="doLogout()">Logout</button>
+            </div>
+
+            <p style="margin-bottom: 10px;">Select your exam:</p>
             
             <div class="course-grid">
-                <button class="course-btn" onclick="checkAccess('BANKING')">Banking</button>
-                <button class="course-btn" onclick="checkAccess('IELTS')">IELTS</button>
-                <button class="course-btn" onclick="checkAccess('JEE')">JEE</button>
-                <button class="course-btn" onclick="checkAccess('NEET')">NEET</button>
-                <button class="course-btn" onclick="checkAccess('NCLEXRN')">NCLEX-RN</button>
-                <button class="course-btn" onclick="checkAccess('HAAD')">HAAD</button>
-                <button class="course-btn" onclick="checkAccess('RRB_NTPC')">RRB NTPC</button>
-                <button class="course-btn" onclick="checkAccess('SSC_CGL')">SSC CGL</button>
-                <button class="course-btn" onclick="checkAccess('SSC_CHSL')">SSC CHSL</button>
-                <button class="course-btn" onclick="checkAccess('UPSC')">UPSC</button>
+                <button class="course-btn" onclick="checkAccess('BANKING', this)">Banking</button>
+                <button class="course-btn" onclick="checkAccess('IELTS', this)">IELTS</button>
+                <button class="course-btn" onclick="checkAccess('JEE', this)">JEE</button>
+                <button class="course-btn" onclick="checkAccess('NEET', this)">NEET</button>
+                <button class="course-btn" onclick="checkAccess('NCLEXRN', this)">NCLEX-RN</button>
+                <button class="course-btn" onclick="checkAccess('HAAD', this)">HAAD</button>
+                <button class="course-btn" onclick="checkAccess('RRB_NTPC', this)">RRB NTPC</button>
+                <button class="course-btn" onclick="checkAccess('SSC_CGL', this)">SSC CGL</button>
+                <button class="course-btn" onclick="checkAccess('SSC_CHSL', this)">SSC CHSL</button>
+                <button class="course-btn" onclick="checkAccess('UPSC', this)">UPSC</button>
             </div>
-            
-            <span class="link" onclick="doLogout()" style="color:var(--orange); margin-top:20px;">Logout</span>
         </div>
 
         <div id="view-signup" class="hidden">
@@ -220,7 +262,7 @@
             
             <input type="hidden" id="sign-device">
 
-            <button onclick="doSignup()" id="btnSignup" style="background: var(--orange);">Sign Up Now</button>
+            <button onclick="doSignup()" id="btnSignup" class="action-btn" style="background: var(--orange);">Sign Up Now</button>
             <p id="msg-signup"></p>
             <span class="link" onclick="switchView('view-login')">Back to Login</span>
         </div>
@@ -232,7 +274,7 @@
                 <input type="email" id="reset-email" placeholder="Your Email">
             </div>
             
-            <button onclick="requestResetCode()" id="btnForgot" style="background: var(--dark-blue);">Send Code</button>
+            <button onclick="requestResetCode()" id="btnForgot" class="action-btn" style="background: var(--dark-blue);">Send Code</button>
             <p id="msg-forgot"></p>
             <span class="link" onclick="switchView('view-login')">Back to Login</span>
         </div>
@@ -250,7 +292,7 @@
                 <span class="toggle-password" onclick="togglePass('confirm-pass')">👁️</span>
             </div>
             
-            <button onclick="confirmReset()" id="btnConfirm" style="background: var(--green);">Update Password</button>
+            <button onclick="confirmReset()" id="btnConfirm" class="action-btn" style="background: var(--green);">Update Password</button>
             <p id="msg-confirm"></p>
         </div>
         
@@ -258,7 +300,7 @@
              <h2 style="color:var(--orange);">Access Required</h2>
              <p>You have not purchased this exam pack yet.</p>
              
-             <button onclick="window.location.href='YOUR_PAYMENT_LINK_HERE'">Buy Access Now</button>
+             <button onclick="window.location.href='YOUR_PAYMENT_LINK_HERE'" class="action-btn">Buy Access Now</button>
              
              <button class="link" style="background:none; border:none; color:var(--dark-blue);" onclick="switchView('view-dashboard')">Back to Dashboard</button>
         </div>
@@ -269,36 +311,28 @@
         // ============================================
         // CONFIGURATION
         // ============================================
-        const API_URL = 'https://script.google.com/macros/s/AKfycbwF7OnyxbfBhR9zt-H-BRHQ_ycVZVPIzhKlevzhSfKudz_WhEYA8im-jYkZVdR6H5fY/exec'; 
+        const API_URL = 'https://script.google.com/macros/s/AKfycbw24cXDfSGWeCFArLeTLUItlBEPn3ibDBtHOCZm1NKqFDKVhcODdBU5N3H_wRd5_e2j/exec'; 
 
         // Store access rights
         let userAccess = {}; 
 
-        // 1. INITIALIZE & RESTORE SESSION (Fixes "Logout on Reload")
+        // 1. INITIALIZE
         window.onload = function() {
-            // Restore Device ID
             document.getElementById('sign-device').value = getDeviceId();
 
-            // Check if user was logged in
             const storedEmail = localStorage.getItem('userEmail');
             const storedAccess = localStorage.getItem('userAccess');
 
             if (storedEmail && storedAccess) {
-                // Restore session data
                 userAccess = JSON.parse(storedAccess);
-                // Go straight to dashboard
                 switchView('view-dashboard');
             }
         };
 
-        // 2. TOGGLE PASSWORD VISIBILITY
+        // 2. TOGGLE PASSWORD
         function togglePass(inputId) {
             const input = document.getElementById(inputId);
-            if (input.type === "password") {
-                input.type = "text";
-            } else {
-                input.type = "password";
-            }
+            input.type = (input.type === "password") ? "text" : "password";
         }
 
         // 3. DEVICE ID
@@ -311,14 +345,21 @@
             return id;
         }
 
+        // 4. VIEW SWITCHER
         function switchView(viewId) {
-            // Hide Header? No, keep it.
-            // Hide all views
+            // Hide everything except main-header initially
             document.querySelectorAll('.container > div').forEach(div => {
-                // Do not hide the header div
-                if(div.id !== 'app-header') div.classList.add('hidden');
+                if (div.id !== 'main-header') div.classList.add('hidden');
             });
-            // Show requested view
+
+            // Special handling for Dashboard: HIDE the big logo header
+            if (viewId === 'view-dashboard') {
+                document.getElementById('main-header').classList.add('hidden');
+            } else {
+                document.getElementById('main-header').classList.remove('hidden');
+            }
+
+            // Show target
             document.getElementById(viewId).classList.remove('hidden');
         }
 
@@ -337,7 +378,7 @@
 
             if(!email || !pass) { msg.innerText = "Please fill all fields"; return; }
 
-            btn.disabled = true; btn.innerText = "Verifying Credentials...";
+            btn.disabled = true; btn.innerText = "Verifying...";
             msg.innerText = "";
 
             fetch(API_URL, {
@@ -354,13 +395,9 @@
                 btn.disabled = false; btn.innerText = "Login";
                 
                 if(data.result === 'success') {
-                    // SAVE SESSION DATA to LocalStorage
                     localStorage.setItem('userEmail', email);
                     localStorage.setItem('userAccess', JSON.stringify(data.accessRights));
-                    
-                    // Update memory
                     userAccess = data.accessRights;
-                    
                     switchView('view-dashboard');
                 } else {
                     msg.innerText = data.message;
@@ -369,18 +406,51 @@
             .catch(err => {
                 btn.disabled = false;
                 msg.innerText = "Connection Error.";
-                console.error(err);
             });
         }
 
-        // --- CHECK ACCESS ---
-        function checkAccess(courseName) {
-            // Backend maps HAAD to true/false. We check that here.
-            if (userAccess && userAccess[courseName] === true) {
-                window.location.href = courseName + '.html';
-            } else {
+        // --- CHECK ACCESS & SECURITY ---
+        // UPDATED: Now pings server to ensure single session
+        function checkAccess(courseName, btnElement) {
+            // 1. Basic Check: Did we pay?
+            if (!userAccess || userAccess[courseName] !== true) {
                 switchView('view-payment');
+                return;
             }
+
+            // 2. Security Check: Is this device still valid?
+            // Store original text
+            const originalText = btnElement.innerText;
+            btnElement.innerText = "Checking...";
+            btnElement.disabled = true;
+
+            const email = localStorage.getItem('userEmail');
+            const deviceId = localStorage.getItem('device_id');
+
+            fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'check_session',
+                    email: email,
+                    deviceId: deviceId
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.valid === true) {
+                    // Success -> Redirect
+                    window.location.href = courseName + '.html';
+                } else {
+                    // Fail -> Log them out
+                    alert("You have been logged out because you signed in on another device.");
+                    doLogout();
+                }
+            })
+            .catch(err => {
+                alert("Network error. Please try again.");
+                btnElement.innerText = originalText;
+                btnElement.disabled = false;
+            });
         }
 
         // --- SIGNUP ---
@@ -418,7 +488,6 @@
             const email = document.getElementById('reset-email').value;
             const btn = document.getElementById('btnForgot');
             const msg = document.getElementById('msg-forgot');
-            
             if(!email) { msg.innerText = "Enter email"; return; }
             btn.disabled = true; btn.innerText = "Sending...";
 
@@ -444,7 +513,6 @@
             const newPass = document.getElementById('confirm-pass').value;
             const btn = document.getElementById('btnConfirm');
             const msg = document.getElementById('msg-confirm');
-
             if(!code || !newPass) { msg.innerText = "Fill all fields"; return; }
             btn.disabled = true; btn.innerText = "Updating...";
 
