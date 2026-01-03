@@ -31,34 +31,48 @@
             background: white;
             padding: 2.5rem;
             border-radius: 16px;
-            /* Soft shadow */
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); 
             width: 100%;
             max-width: 420px;
             text-align: center;
             border-top: 5px solid var(--blue);
+            position: relative;
         }
 
-        /* --- LOGO --- */
+        /* --- LOGO & HEADER --- */
         .app-logo {
             width: 120px; 
             height: auto;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             display: block;
             margin-left: auto;
             margin-right: auto;
         }
 
-        h2 { color: var(--dark-blue); margin-bottom: 0.5rem; font-weight: 700; }
+        /* Title below Logo */
+        .app-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--dark-blue);
+            margin: 0 0 1.5rem 0;
+            letter-spacing: -0.5px;
+        }
+
+        h2 { color: var(--dark-blue); margin-bottom: 0.5rem; font-weight: 700; font-size: 1.2rem; }
         p { color: #666; font-size: 0.95rem; margin-bottom: 1.5rem; }
 
         /* --- FORMS --- */
         label { display: block; text-align: left; margin-bottom: 5px; color: var(--dark-blue); font-weight: 600; font-size: 0.9rem; }
 
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
         input {
             width: 100%;
             padding: 12px;
-            margin-bottom: 15px;
+            padding-right: 40px; /* Space for eye icon */
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             box-sizing: border-box;
@@ -67,11 +81,23 @@
         }
         input:focus { border-color: var(--blue); outline: none; }
 
+        /* --- PASSWORD TOGGLE ICON --- */
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #999;
+            font-size: 1.1rem;
+            user-select: none;
+        }
+        .toggle-password:hover { color: var(--blue); }
+
         /* --- BUTTONS --- */
         button {
             width: 100%;
             padding: 14px;
-            /* Gradient using Brand Blue & Green */
             background: linear-gradient(135deg, var(--blue), var(--green));
             color: white;
             border: none;
@@ -88,10 +114,10 @@
         }
         button:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        /* --- DASHBOARD GRID (Exam Menu) --- */
+        /* --- DASHBOARD GRID --- */
         .course-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* 2 Columns */
+            grid-template-columns: 1fr 1fr; 
             gap: 12px;
             margin-top: 10px;
         }
@@ -107,12 +133,8 @@
             transition: all 0.2s;
             font-weight: 600;
         }
-        
-        /* Hover effect for course buttons */
         .course-btn:hover { 
-            background: var(--blue); 
-            color: white; 
-            transform: translateY(-2px);
+            background: var(--blue); color: white; transform: translateY(-2px);
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
@@ -128,17 +150,25 @@
 
     <div class="container">
         
-        <img src="https://lh3.googleusercontent.com/d/1LGuphhLdW2lTGeyZoY_ZUiyvEkl3mzfM" alt="Revision Test Logo" class="app-logo">
+        <div id="app-header">
+            <img src="https://lh3.googleusercontent.com/d/1LGuphhLdW2lTGeyZoY_ZUiyvEkl3mzfM" alt="Logo" class="app-logo">
+            <h1 class="app-title">Revision Test</h1>
+        </div>
 
         <div id="view-login">
             <h2>Welcome Back</h2>
             <p>Login to access your revision tests</p>
             
             <label>Email Address</label>
-            <input type="email" id="login-email" placeholder="name@example.com">
+            <div class="input-group">
+                <input type="email" id="login-email" placeholder="name@example.com">
+            </div>
             
             <label>Password</label>
-            <input type="password" id="login-pass" placeholder="Enter password">
+            <div class="input-group">
+                <input type="password" id="login-pass" placeholder="Enter password">
+                <span class="toggle-password" onclick="togglePass('login-pass')">👁️</span>
+            </div>
             
             <button onclick="doLogin()" id="btnLogin">Login</button>
             <p id="msg-login" class="error"></p>
@@ -159,24 +189,34 @@
                 <button class="course-btn" onclick="checkAccess('JEE')">JEE</button>
                 <button class="course-btn" onclick="checkAccess('NEET')">NEET</button>
                 <button class="course-btn" onclick="checkAccess('NCLEXRN')">NCLEX-RN</button>
-                <button class="course-btn" onclick="checkAccess('OET')">OET</button>
+                <button class="course-btn" onclick="checkAccess('HAAD')">HAAD</button>
                 <button class="course-btn" onclick="checkAccess('RRB_NTPC')">RRB NTPC</button>
                 <button class="course-btn" onclick="checkAccess('SSC_CGL')">SSC CGL</button>
                 <button class="course-btn" onclick="checkAccess('SSC_CHSL')">SSC CHSL</button>
                 <button class="course-btn" onclick="checkAccess('UPSC')">UPSC</button>
             </div>
             
-            <span class="link" onclick="location.reload()" style="color:var(--orange); margin-top:20px;">Logout</span>
+            <span class="link" onclick="doLogout()" style="color:var(--orange); margin-top:20px;">Logout</span>
         </div>
 
         <div id="view-signup" class="hidden">
             <h2 style="color:var(--orange)">Create Account</h2>
             <p>Join Revision Test today</p>
             
-            <input type="text" id="sign-name" placeholder="Full Name">
-            <input type="email" id="sign-email" placeholder="Email Address">
-            <input type="text" id="sign-phone" placeholder="Phone Number">
-            <input type="password" id="sign-pass" placeholder="Create Password">
+            <div class="input-group">
+                <input type="text" id="sign-name" placeholder="Full Name">
+            </div>
+            <div class="input-group">
+                <input type="email" id="sign-email" placeholder="Email Address">
+            </div>
+            <div class="input-group">
+                <input type="text" id="sign-phone" placeholder="Phone Number">
+            </div>
+            
+            <div class="input-group">
+                <input type="password" id="sign-pass" placeholder="Create Password">
+                <span class="toggle-password" onclick="togglePass('sign-pass')">👁️</span>
+            </div>
             
             <input type="hidden" id="sign-device">
 
@@ -188,7 +228,9 @@
         <div id="view-forgot" class="hidden">
             <h2>Reset Password</h2>
             <p>Enter your email to receive a code.</p>
-            <input type="email" id="reset-email" placeholder="Your Email">
+            <div class="input-group">
+                <input type="email" id="reset-email" placeholder="Your Email">
+            </div>
             
             <button onclick="requestResetCode()" id="btnForgot" style="background: var(--dark-blue);">Send Code</button>
             <p id="msg-forgot"></p>
@@ -198,8 +240,15 @@
         <div id="view-confirm" class="hidden">
             <h2>New Password</h2>
             <p>Check your email for the code.</p>
-            <input type="text" id="confirm-code" placeholder="6-Digit Code">
-            <input type="password" id="confirm-pass" placeholder="New Password">
+            
+            <div class="input-group">
+                <input type="text" id="confirm-code" placeholder="6-Digit Code">
+            </div>
+            
+            <div class="input-group">
+                <input type="password" id="confirm-pass" placeholder="New Password">
+                <span class="toggle-password" onclick="togglePass('confirm-pass')">👁️</span>
+            </div>
             
             <button onclick="confirmReset()" id="btnConfirm" style="background: var(--green);">Update Password</button>
             <p id="msg-confirm"></p>
@@ -220,17 +269,39 @@
         // ============================================
         // CONFIGURATION
         // ============================================
-        // The URL you provided:
-        const API_URL = 'https://script.google.com/macros/s/AKfycbw24cXDfSGWeCFArLeTLUItlBEPn3ibDBtHOCZm1NKqFDKVhcODdBU5N3H_wRd5_e2j/exec'; 
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwF7OnyxbfBhR9zt-H-BRHQ_ycVZVPIzhKlevzhSfKudz_WhEYA8im-jYkZVdR6H5fY/exec'; 
 
-        // This object will store the user's permissions after login
+        // Store access rights
         let userAccess = {}; 
 
-        // ============================================
-        // LOGIC & FUNCTIONS
-        // ============================================
+        // 1. INITIALIZE & RESTORE SESSION (Fixes "Logout on Reload")
+        window.onload = function() {
+            // Restore Device ID
+            document.getElementById('sign-device').value = getDeviceId();
 
-        // 1. DEVICE ID GENERATOR (Ensures Single Session)
+            // Check if user was logged in
+            const storedEmail = localStorage.getItem('userEmail');
+            const storedAccess = localStorage.getItem('userAccess');
+
+            if (storedEmail && storedAccess) {
+                // Restore session data
+                userAccess = JSON.parse(storedAccess);
+                // Go straight to dashboard
+                switchView('view-dashboard');
+            }
+        };
+
+        // 2. TOGGLE PASSWORD VISIBILITY
+        function togglePass(inputId) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+            } else {
+                input.type = "password";
+            }
+        }
+
+        // 3. DEVICE ID
         function getDeviceId() {
             let id = localStorage.getItem('device_id');
             if (!id) {
@@ -240,23 +311,24 @@
             return id;
         }
 
-        // Initialize device ID for signup form
-        document.getElementById('sign-device').value = getDeviceId();
-
-        // Helper to switch between screens
         function switchView(viewId) {
-            // Hide all views except Logo
+            // Hide Header? No, keep it.
+            // Hide all views
             document.querySelectorAll('.container > div').forEach(div => {
-                if(div.className !== 'app-logo') div.classList.add('hidden');
+                // Do not hide the header div
+                if(div.id !== 'app-header') div.classList.add('hidden');
             });
-            // Show the specific view requested
+            // Show requested view
             document.getElementById(viewId).classList.remove('hidden');
-            
-            // Ensure logo is always visible
-            document.querySelector('.app-logo').style.display = 'block'; 
         }
 
-        // --- LOGIN FUNCTION ---
+        function doLogout() {
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userAccess');
+            location.reload();
+        }
+
+        // --- LOGIN ---
         function doLogin() {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-pass').value;
@@ -282,13 +354,13 @@
                 btn.disabled = false; btn.innerText = "Login";
                 
                 if(data.result === 'success') {
-                    // 1. Save User Session
+                    // SAVE SESSION DATA to LocalStorage
                     localStorage.setItem('userEmail', email);
+                    localStorage.setItem('userAccess', JSON.stringify(data.accessRights));
                     
-                    // 2. Save the list of allowed courses
+                    // Update memory
                     userAccess = data.accessRights;
                     
-                    // 3. Go to Dashboard
                     switchView('view-dashboard');
                 } else {
                     msg.innerText = data.message;
@@ -296,24 +368,22 @@
             })
             .catch(err => {
                 btn.disabled = false;
-                msg.innerText = "Connection Error. Check your internet.";
+                msg.innerText = "Connection Error.";
                 console.error(err);
             });
         }
 
-        // --- CHECK ACCESS (Called when clicking a course button) ---
+        // --- CHECK ACCESS ---
         function checkAccess(courseName) {
-            // Logic: Check if the courseName is TRUE in the userAccess list
+            // Backend maps HAAD to true/false. We check that here.
             if (userAccess && userAccess[courseName] === true) {
-                // Access Granted: Redirect to the specific HTML file
                 window.location.href = courseName + '.html';
             } else {
-                // Access Denied: Show payment screen
                 switchView('view-payment');
             }
         }
 
-        // --- SIGNUP FUNCTION ---
+        // --- SIGNUP ---
         function doSignup() {
             const name = document.getElementById('sign-name').value;
             const email = document.getElementById('sign-email').value;
@@ -343,14 +413,13 @@
             });
         }
 
-        // --- RESET PASSWORD: STEP 1 (Request Code) ---
+        // --- RESET FLOW ---
         function requestResetCode() {
             const email = document.getElementById('reset-email').value;
             const btn = document.getElementById('btnForgot');
             const msg = document.getElementById('msg-forgot');
             
             if(!email) { msg.innerText = "Enter email"; return; }
-            
             btn.disabled = true; btn.innerText = "Sending...";
 
             fetch(API_URL, {
@@ -369,7 +438,6 @@
             });
         }
 
-        // --- RESET PASSWORD: STEP 2 (Confirm Code) ---
         function confirmReset() {
             const email = localStorage.getItem('resetEmail');
             const code = document.getElementById('confirm-code').value;
@@ -378,7 +446,6 @@
             const msg = document.getElementById('msg-confirm');
 
             if(!code || !newPass) { msg.innerText = "Fill all fields"; return; }
-            
             btn.disabled = true; btn.innerText = "Updating...";
 
             fetch(API_URL, {
