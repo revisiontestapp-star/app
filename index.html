@@ -31,16 +31,17 @@
             background: white;
             padding: 2.5rem;
             border-radius: 16px;
+            /* Soft shadow */
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); 
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             text-align: center;
             border-top: 5px solid var(--blue);
         }
 
-        /* --- LOGO IMAGE STYLING --- */
+        /* --- LOGO --- */
         .app-logo {
-            width: 80px; 
+            width: 120px; 
             height: auto;
             margin-bottom: 1rem;
             display: block;
@@ -51,9 +52,10 @@
         h2 { color: var(--dark-blue); margin-bottom: 0.5rem; font-weight: 700; }
         p { color: #666; font-size: 0.95rem; margin-bottom: 1.5rem; }
 
+        /* --- FORMS --- */
         label { display: block; text-align: left; margin-bottom: 5px; color: var(--dark-blue); font-weight: 600; font-size: 0.9rem; }
 
-        input, select {
+        input {
             width: 100%;
             padding: 12px;
             margin-bottom: 15px;
@@ -61,13 +63,15 @@
             border-radius: 8px;
             box-sizing: border-box;
             font-size: 1rem;
+            transition: border-color 0.2s;
         }
+        input:focus { border-color: var(--blue); outline: none; }
 
-        input:focus, select:focus { border-color: var(--blue); outline: none; }
-
+        /* --- BUTTONS --- */
         button {
             width: 100%;
             padding: 14px;
+            /* Gradient using Brand Blue & Green */
             background: linear-gradient(135deg, var(--blue), var(--green));
             color: white;
             border: none;
@@ -75,13 +79,46 @@
             cursor: pointer;
             font-size: 1rem;
             font-weight: bold;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 10px;
+        }
+        button:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 10px rgba(0, 160, 227, 0.3);
+        }
+        button:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* --- DASHBOARD GRID (Exam Menu) --- */
+        .course-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 Columns */
+            gap: 12px;
+            margin-top: 10px;
+        }
+        
+        .course-btn {
+            background: white;
+            border: 2px solid var(--blue);
+            color: var(--dark-blue);
+            padding: 15px 5px;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        
+        /* Hover effect for course buttons */
+        .course-btn:hover { 
+            background: var(--blue); 
+            color: white; 
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        button:hover { transform: translateY(-2px); }
-        button:disabled { background: #ccc; cursor: not-allowed; transform: none; }
-
         .link { color: var(--dark-blue); cursor: pointer; text-decoration: none; font-size: 0.9rem; display: block; margin-top: 15px; }
+        .link:hover { text-decoration: underline; color: var(--orange); }
+
         .hidden { display: none; }
         .error { color: #dc2626; font-size: 0.9rem; margin-top: 10px; font-weight: bold;}
 
@@ -91,48 +128,56 @@
 
     <div class="container">
         
-        <img src="https://lh3.googleusercontent.com/d/1yFivjS463NWwftZxyij-lmK3wM0vOVmt" alt="Revision Test Logo" class="app-logo">
+        <img src="https://lh3.googleusercontent.com/d/1LGuphhLdW2lTGeyZoY_ZUiyvEkl3mzfM" alt="Revision Test Logo" class="app-logo">
 
         <div id="view-login">
             <h2>Welcome Back</h2>
-            <p>Login to continue your revision</p>
+            <p>Login to access your revision tests</p>
             
-            <label>Email</label>
+            <label>Email Address</label>
             <input type="email" id="login-email" placeholder="name@example.com">
             
             <label>Password</label>
-            <input type="password" id="login-pass" placeholder="••••••••">
+            <input type="password" id="login-pass" placeholder="Enter password">
             
-            <label>Select Course</label>
-            <select id="login-course">
-                <option value="BANKING">Banking Exams</option>
-                <option value="IELTS">IELTS</option>
-                <option value="JEE">JEE (Joint Entrance)</option>
-                <option value="NEET">NEET</option>
-                <option value="NCLEXRN">NCLEX-RN</option>
-                <option value="OET">OET</option>
-                <option value="RRB_NTPC">RRB NTPC</option>
-                <option value="SSC_CGL">SSC CGL</option>
-                <option value="SSC_CHSL">SSC CHSL</option>
-                <option value="UPSC">UPSC</option>
-            </select>
-
-            <button onclick="doLogin()" id="btnLogin">Secure Login</button>
+            <button onclick="doLogin()" id="btnLogin">Login</button>
             <p id="msg-login" class="error"></p>
 
-            <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
+            <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
                 <span class="link" onclick="switchView('view-signup')">New User? <b>Create Account</b></span>
                 <span class="link" style="color:#666; font-size:0.85rem;" onclick="switchView('view-forgot')">Forgot Password?</span>
             </div>
         </div>
 
+        <div id="view-dashboard" class="hidden">
+            <h2>Select Your Exam</h2>
+            <p>Choose a subject to start revising</p>
+            
+            <div class="course-grid">
+                <button class="course-btn" onclick="checkAccess('BANKING')">Banking</button>
+                <button class="course-btn" onclick="checkAccess('IELTS')">IELTS</button>
+                <button class="course-btn" onclick="checkAccess('JEE')">JEE</button>
+                <button class="course-btn" onclick="checkAccess('NEET')">NEET</button>
+                <button class="course-btn" onclick="checkAccess('NCLEXRN')">NCLEX-RN</button>
+                <button class="course-btn" onclick="checkAccess('OET')">OET</button>
+                <button class="course-btn" onclick="checkAccess('RRB_NTPC')">RRB NTPC</button>
+                <button class="course-btn" onclick="checkAccess('SSC_CGL')">SSC CGL</button>
+                <button class="course-btn" onclick="checkAccess('SSC_CHSL')">SSC CHSL</button>
+                <button class="course-btn" onclick="checkAccess('UPSC')">UPSC</button>
+            </div>
+            
+            <span class="link" onclick="location.reload()" style="color:var(--orange); margin-top:20px;">Logout</span>
+        </div>
+
         <div id="view-signup" class="hidden">
             <h2 style="color:var(--orange)">Create Account</h2>
+            <p>Join Revision Test today</p>
             
             <input type="text" id="sign-name" placeholder="Full Name">
             <input type="email" id="sign-email" placeholder="Email Address">
             <input type="text" id="sign-phone" placeholder="Phone Number">
             <input type="password" id="sign-pass" placeholder="Create Password">
+            
             <input type="hidden" id="sign-device">
 
             <button onclick="doSignup()" id="btnSignup" style="background: var(--orange);">Sign Up Now</button>
@@ -144,6 +189,7 @@
             <h2>Reset Password</h2>
             <p>Enter your email to receive a code.</p>
             <input type="email" id="reset-email" placeholder="Your Email">
+            
             <button onclick="requestResetCode()" id="btnForgot" style="background: var(--dark-blue);">Send Code</button>
             <p id="msg-forgot"></p>
             <span class="link" onclick="switchView('view-login')">Back to Login</span>
@@ -154,24 +200,37 @@
             <p>Check your email for the code.</p>
             <input type="text" id="confirm-code" placeholder="6-Digit Code">
             <input type="password" id="confirm-pass" placeholder="New Password">
+            
             <button onclick="confirmReset()" id="btnConfirm" style="background: var(--green);">Update Password</button>
             <p id="msg-confirm"></p>
         </div>
         
         <div id="view-payment" class="hidden" style="text-align:center;">
              <h2 style="color:var(--orange);">Access Required</h2>
-             <p>You do not have access to this course yet.</p>
+             <p>You have not purchased this exam pack yet.</p>
+             
              <button onclick="window.location.href='YOUR_PAYMENT_LINK_HERE'">Buy Access Now</button>
-             <span class="link" onclick="location.reload()">Back</span>
+             
+             <button class="link" style="background:none; border:none; color:var(--dark-blue);" onclick="switchView('view-dashboard')">Back to Dashboard</button>
         </div>
 
     </div>
 
     <script>
-        // *** CRITICAL: PASTE YOUR NEW APPS SCRIPT URL HERE ***
-        const API_URL = 'https://script.google.com/macros/s/AKfycbydqcfGOzJ6x7Ajl_KzB4DyTzFfTvVsHEnPx7WdOu4gTVD6J5aeHJadQSiy3j2al_gO/exec'; 
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        // The URL you provided:
+        const API_URL = 'https://script.google.com/macros/s/AKfycbw24cXDfSGWeCFArLeTLUItlBEPn3ibDBtHOCZm1NKqFDKVhcODdBU5N3H_wRd5_e2j/exec'; 
 
-        // 1. DEVICE ID LOGIC
+        // This object will store the user's permissions after login
+        let userAccess = {}; 
+
+        // ============================================
+        // LOGIC & FUNCTIONS
+        // ============================================
+
+        // 1. DEVICE ID GENERATOR (Ensures Single Session)
         function getDeviceId() {
             let id = localStorage.getItem('device_id');
             if (!id) {
@@ -181,57 +240,80 @@
             return id;
         }
 
+        // Initialize device ID for signup form
         document.getElementById('sign-device').value = getDeviceId();
 
+        // Helper to switch between screens
         function switchView(viewId) {
+            // Hide all views except Logo
             document.querySelectorAll('.container > div').forEach(div => {
-                if(div.id !== 'loader' && div.className !== 'app-logo') div.classList.add('hidden');
+                if(div.className !== 'app-logo') div.classList.add('hidden');
             });
-            document.querySelector('.app-logo').style.display = 'block'; // Ensure logo stays
+            // Show the specific view requested
             document.getElementById(viewId).classList.remove('hidden');
+            
+            // Ensure logo is always visible
+            document.querySelector('.app-logo').style.display = 'block'; 
         }
 
-        // --- LOGIN ---
+        // --- LOGIN FUNCTION ---
         function doLogin() {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-pass').value;
-            const course = document.getElementById('login-course').value;
             const btn = document.getElementById('btnLogin');
             const msg = document.getElementById('msg-login');
 
             if(!email || !pass) { msg.innerText = "Please fill all fields"; return; }
 
-            btn.disabled = true; btn.innerText = "Verifying...";
+            btn.disabled = true; btn.innerText = "Verifying Credentials...";
             msg.innerText = "";
 
             fetch(API_URL, {
                 method: 'POST',
                 body: JSON.stringify({ 
-                    action: 'login', email, password: pass, course, deviceId: getDeviceId() 
+                    action: 'login', 
+                    email: email, 
+                    password: pass, 
+                    deviceId: getDeviceId() 
                 })
             })
             .then(res => res.json())
             .then(data => {
-                btn.disabled = false; btn.innerText = "Secure Login";
+                btn.disabled = false; btn.innerText = "Login";
+                
                 if(data.result === 'success') {
-                    if(data.access === true) {
-                        localStorage.setItem('userEmail', email);
-                        localStorage.setItem('currentCourse', course);
-                        window.location.href = course + '.html';
-                    } else {
-                        switchView('view-payment');
-                    }
+                    // 1. Save User Session
+                    localStorage.setItem('userEmail', email);
+                    
+                    // 2. Save the list of allowed courses
+                    userAccess = data.accessRights;
+                    
+                    // 3. Go to Dashboard
+                    switchView('view-dashboard');
                 } else {
                     msg.innerText = data.message;
                 }
             })
             .catch(err => {
                 btn.disabled = false;
-                msg.innerText = "Connection Error. Check Script URL.";
+                msg.innerText = "Connection Error. Check your internet.";
+                console.error(err);
             });
         }
 
-        // --- SIGNUP ---
+        // --- CHECK ACCESS (Called when clicking a course button) ---
+        function checkAccess(courseName) {
+            // Logic: Check if the courseName is TRUE in the userAccess list
+            if (userAccess && userAccess[courseName] === true) {
+                // Access Granted: Redirect to the specific HTML file
+                window.location.href = courseName + '.html';
+            } else {
+                // Access Denied: Show payment screen
+                switchView('view-payment');
+            }
+        }
+
+        // --- SIGNUP FUNCTION ---
         function doSignup() {
             const name = document.getElementById('sign-name').value;
             const email = document.getElementById('sign-email').value;
@@ -256,19 +338,19 @@
                     alert("Account Created! Please Login.");
                     switchView('view-login');
                 } else {
-                    msg.innerText = data.message;
-                    msg.className = "error";
+                    msg.innerText = data.message; msg.className = "error";
                 }
             });
         }
 
-        // --- RESET FLOW ---
+        // --- RESET PASSWORD: STEP 1 (Request Code) ---
         function requestResetCode() {
             const email = document.getElementById('reset-email').value;
             const btn = document.getElementById('btnForgot');
             const msg = document.getElementById('msg-forgot');
             
             if(!email) { msg.innerText = "Enter email"; return; }
+            
             btn.disabled = true; btn.innerText = "Sending...";
 
             fetch(API_URL, {
@@ -287,6 +369,7 @@
             });
         }
 
+        // --- RESET PASSWORD: STEP 2 (Confirm Code) ---
         function confirmReset() {
             const email = localStorage.getItem('resetEmail');
             const code = document.getElementById('confirm-code').value;
@@ -295,6 +378,7 @@
             const msg = document.getElementById('msg-confirm');
 
             if(!code || !newPass) { msg.innerText = "Fill all fields"; return; }
+            
             btn.disabled = true; btn.innerText = "Updating...";
 
             fetch(API_URL, {
@@ -305,7 +389,7 @@
             .then(data => {
                 btn.disabled = false; btn.innerText = "Update Password";
                 if(data.result === 'success') {
-                    alert("Password updated!");
+                    alert("Password updated! Please login.");
                     switchView('view-login');
                 } else {
                     msg.innerText = data.message; msg.className = "error";
