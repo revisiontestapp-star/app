@@ -39,7 +39,7 @@
             position: relative;
         }
 
-        /* --- DASHBOARD HEADER (New Layout) --- */
+        /* --- DASHBOARD HEADER --- */
         .dash-header {
             display: flex;
             justify-content: space-between;
@@ -64,12 +64,12 @@
             background: none;
             border: none;
             padding: 0;
-            width: auto; /* Override default button width */
+            width: auto;
             margin: 0;
         }
         .logout-btn:hover { text-decoration: underline; }
 
-        /* --- MAIN LOGO (Login Screen) --- */
+        /* --- LOGO & TITLE (Login Screen) --- */
         .app-logo {
             width: 100px; 
             height: auto;
@@ -79,7 +79,6 @@
             margin-right: auto;
         }
 
-        /* Title on Login Screen */
         .main-title {
             font-size: 1.5rem;
             font-weight: 800;
@@ -93,7 +92,6 @@
 
         /* --- FORMS --- */
         label { display: block; text-align: left; margin-bottom: 5px; color: var(--dark-blue); font-weight: 600; font-size: 0.9rem; }
-
         .input-group { position: relative; margin-bottom: 15px; }
 
         input {
@@ -158,11 +156,14 @@
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 600;
-            width: 100%; /* Ensure full width in grid */
+            width: 100%; 
         }
         .course-btn:hover { 
             background: var(--blue); color: white; transform: translateY(-2px);
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .course-btn:disabled {
+            background: #f4f4f4; color: #999; border-color: #ddd; cursor: wait;
         }
 
         .link { color: var(--dark-blue); cursor: pointer; text-decoration: none; font-size: 0.9rem; display: block; margin-top: 15px; }
@@ -170,20 +171,6 @@
 
         .hidden { display: none !important; }
         .error { color: #dc2626; font-size: 0.9rem; margin-top: 10px; font-weight: bold;}
-        
-        /* Spinner for course check */
-        .spinner {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-left: 8px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
     </style>
 </head>
 <body>
@@ -228,40 +215,30 @@
             <p style="margin-bottom: 10px;">Select your exam:</p>
             
             <div class="course-grid">
-                <button class="course-btn" onclick="checkAccess('BANKING', this)">Banking</button>
-                <button class="course-btn" onclick="checkAccess('IELTS', this)">IELTS</button>
-                <button class="course-btn" onclick="checkAccess('JEE', this)">JEE</button>
-                <button class="course-btn" onclick="checkAccess('NEET', this)">NEET</button>
-                <button class="course-btn" onclick="checkAccess('NCLEXRN', this)">NCLEX-RN</button>
-                <button class="course-btn" onclick="checkAccess('HAAD', this)">HAAD</button>
-                <button class="course-btn" onclick="checkAccess('RRB_NTPC', this)">RRB NTPC</button>
-                <button class="course-btn" onclick="checkAccess('SSC_CGL', this)">SSC CGL</button>
-                <button class="course-btn" onclick="checkAccess('SSC_CHSL', this)">SSC CHSL</button>
-                <button class="course-btn" onclick="checkAccess('UPSC', this)">UPSC</button>
+                <button class="course-btn" onclick="openCourse('BANKING', this)">Banking</button>
+                <button class="course-btn" onclick="openCourse('IELTS', this)">IELTS</button>
+                <button class="course-btn" onclick="openCourse('JEE', this)">JEE</button>
+                <button class="course-btn" onclick="openCourse('NEET', this)">NEET</button>
+                <button class="course-btn" onclick="openCourse('NCLEXRN', this)">NCLEX-RN</button>
+                <button class="course-btn" onclick="openCourse('HAAD', this)">HAAD</button>
+                <button class="course-btn" onclick="openCourse('RRB_NTPC', this)">RRB NTPC</button>
+                <button class="course-btn" onclick="openCourse('SSC_CGL', this)">SSC CGL</button>
+                <button class="course-btn" onclick="openCourse('SSC_CHSL', this)">SSC CHSL</button>
+                <button class="course-btn" onclick="openCourse('UPSC', this)">UPSC</button>
             </div>
         </div>
 
         <div id="view-signup" class="hidden">
             <h2 style="color:var(--orange)">Create Account</h2>
             <p>Join Revision Test today</p>
-            
-            <div class="input-group">
-                <input type="text" id="sign-name" placeholder="Full Name">
-            </div>
-            <div class="input-group">
-                <input type="email" id="sign-email" placeholder="Email Address">
-            </div>
-            <div class="input-group">
-                <input type="text" id="sign-phone" placeholder="Phone Number">
-            </div>
-            
+            <div class="input-group"><input type="text" id="sign-name" placeholder="Full Name"></div>
+            <div class="input-group"><input type="email" id="sign-email" placeholder="Email Address"></div>
+            <div class="input-group"><input type="text" id="sign-phone" placeholder="Phone Number"></div>
             <div class="input-group">
                 <input type="password" id="sign-pass" placeholder="Create Password">
                 <span class="toggle-password" onclick="togglePass('sign-pass')">👁️</span>
             </div>
-            
             <input type="hidden" id="sign-device">
-
             <button onclick="doSignup()" id="btnSignup" class="action-btn" style="background: var(--orange);">Sign Up Now</button>
             <p id="msg-signup"></p>
             <span class="link" onclick="switchView('view-login')">Back to Login</span>
@@ -270,10 +247,7 @@
         <div id="view-forgot" class="hidden">
             <h2>Reset Password</h2>
             <p>Enter your email to receive a code.</p>
-            <div class="input-group">
-                <input type="email" id="reset-email" placeholder="Your Email">
-            </div>
-            
+            <div class="input-group"><input type="email" id="reset-email" placeholder="Your Email"></div>
             <button onclick="requestResetCode()" id="btnForgot" class="action-btn" style="background: var(--dark-blue);">Send Code</button>
             <p id="msg-forgot"></p>
             <span class="link" onclick="switchView('view-login')">Back to Login</span>
@@ -282,16 +256,11 @@
         <div id="view-confirm" class="hidden">
             <h2>New Password</h2>
             <p>Check your email for the code.</p>
-            
-            <div class="input-group">
-                <input type="text" id="confirm-code" placeholder="6-Digit Code">
-            </div>
-            
+            <div class="input-group"><input type="text" id="confirm-code" placeholder="6-Digit Code"></div>
             <div class="input-group">
                 <input type="password" id="confirm-pass" placeholder="New Password">
                 <span class="toggle-password" onclick="togglePass('confirm-pass')">👁️</span>
             </div>
-            
             <button onclick="confirmReset()" id="btnConfirm" class="action-btn" style="background: var(--green);">Update Password</button>
             <p id="msg-confirm"></p>
         </div>
@@ -299,22 +268,19 @@
         <div id="view-payment" class="hidden" style="text-align:center;">
              <h2 style="color:var(--orange);">Access Required</h2>
              <p>You have not purchased this exam pack yet.</p>
-             
              <button onclick="window.location.href='YOUR_PAYMENT_LINK_HERE'" class="action-btn">Buy Access Now</button>
-             
              <button class="link" style="background:none; border:none; color:var(--dark-blue);" onclick="switchView('view-dashboard')">Back to Dashboard</button>
         </div>
 
     </div>
 
     <script>
-        // ============================================
         // CONFIGURATION
-        // ============================================
         const API_URL = 'https://script.google.com/macros/s/AKfycbw24cXDfSGWeCFArLeTLUItlBEPn3ibDBtHOCZm1NKqFDKVhcODdBU5N3H_wRd5_e2j/exec'; 
 
-        // Store access rights
+        // State
         let userAccess = {}; 
+        let sessionTimer = null; // Stores the interval ID
 
         // 1. INITIALIZE
         window.onload = function() {
@@ -329,13 +295,94 @@
             }
         };
 
-        // 2. TOGGLE PASSWORD
+        // 2. BACKGROUND MONITOR (The Fix for "Depend on Click")
+        function startSessionMonitor() {
+            // Stop any existing timer
+            if(sessionTimer) clearInterval(sessionTimer);
+            
+            // Run check immediately, then every 5 seconds
+            checkSessionSilent();
+            sessionTimer = setInterval(checkSessionSilent, 5000); 
+        }
+
+        function checkSessionSilent() {
+            const email = localStorage.getItem('userEmail');
+            const deviceId = localStorage.getItem('device_id');
+            
+            if(!email || !deviceId) return; // Not logged in
+
+            fetch(API_URL, {
+                method: 'POST',
+                // Use 'no-cors' if you just want to trigger, but we need response. 
+                // Standard fetch works fine with GAS web app returning JSON.
+                body: JSON.stringify({ action: 'check_session', email: email, deviceId: deviceId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.valid === false) {
+                    // SESSION INVALID! KILL IT IMMEDIATELY
+                    clearInterval(sessionTimer); // Stop checking
+                    alert("Security Alert: You have logged in on another device. You will be logged out here.");
+                    doLogout();
+                }
+            })
+            .catch(err => console.log("Background check skipped (network)"));
+        }
+
+        // 3. COURSE CLICK HANDLER
+        function openCourse(courseName, btnElement) {
+            // A. Check Payment (Local)
+            if (!userAccess || userAccess[courseName] !== true) {
+                switchView('view-payment');
+                return;
+            }
+
+            // B. Visual Feedback
+            const originalText = btnElement.innerText;
+            btnElement.innerText = "Opening...";
+            btnElement.disabled = true;
+
+            // C. Final Security Check (Double verification)
+            const email = localStorage.getItem('userEmail');
+            const deviceId = localStorage.getItem('device_id');
+
+            fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'check_session', email: email, deviceId: deviceId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.valid === true) {
+                    // Success: Redirect
+                    window.location.href = courseName + '.html';
+                } else {
+                    // Fail: Logout
+                    alert("Session Expired. Logging out.");
+                    doLogout();
+                }
+            })
+            .catch(err => {
+                // Network error? Allow access if local check passed? 
+                // Better to be safe: Reset button and alert user.
+                alert("Network connection failed. Please try again.");
+                btnElement.innerText = originalText;
+                btnElement.disabled = false;
+            });
+        }
+
+        // 4. UTILS
+        function doLogout() {
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userAccess');
+            if(sessionTimer) clearInterval(sessionTimer);
+            location.reload();
+        }
+
         function togglePass(inputId) {
             const input = document.getElementById(inputId);
             input.type = (input.type === "password") ? "text" : "password";
         }
 
-        // 3. DEVICE ID
         function getDeviceId() {
             let id = localStorage.getItem('device_id');
             if (!id) {
@@ -345,31 +392,24 @@
             return id;
         }
 
-        // 4. VIEW SWITCHER
         function switchView(viewId) {
-            // Hide everything except main-header initially
             document.querySelectorAll('.container > div').forEach(div => {
                 if (div.id !== 'main-header') div.classList.add('hidden');
             });
 
-            // Special handling for Dashboard: HIDE the big logo header
             if (viewId === 'view-dashboard') {
                 document.getElementById('main-header').classList.add('hidden');
+                // START MONITORING WHEN DASHBOARD OPENS
+                startSessionMonitor();
             } else {
                 document.getElementById('main-header').classList.remove('hidden');
+                // STOP MONITORING IF NOT ON DASHBOARD
+                if(sessionTimer) clearInterval(sessionTimer);
             }
-
-            // Show target
             document.getElementById(viewId).classList.remove('hidden');
         }
 
-        function doLogout() {
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('userAccess');
-            location.reload();
-        }
-
-        // --- LOGIN ---
+        // --- AUTH API CALLS ---
         function doLogin() {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-pass').value;
@@ -383,17 +423,11 @@
 
             fetch(API_URL, {
                 method: 'POST',
-                body: JSON.stringify({ 
-                    action: 'login', 
-                    email: email, 
-                    password: pass, 
-                    deviceId: getDeviceId() 
-                })
+                body: JSON.stringify({ action: 'login', email: email, password: pass, deviceId: getDeviceId() })
             })
             .then(res => res.json())
             .then(data => {
                 btn.disabled = false; btn.innerText = "Login";
-                
                 if(data.result === 'success') {
                     localStorage.setItem('userEmail', email);
                     localStorage.setItem('userAccess', JSON.stringify(data.accessRights));
@@ -409,51 +443,6 @@
             });
         }
 
-        // --- CHECK ACCESS & SECURITY ---
-        // UPDATED: Now pings server to ensure single session
-        function checkAccess(courseName, btnElement) {
-            // 1. Basic Check: Did we pay?
-            if (!userAccess || userAccess[courseName] !== true) {
-                switchView('view-payment');
-                return;
-            }
-
-            // 2. Security Check: Is this device still valid?
-            // Store original text
-            const originalText = btnElement.innerText;
-            btnElement.innerText = "Checking...";
-            btnElement.disabled = true;
-
-            const email = localStorage.getItem('userEmail');
-            const deviceId = localStorage.getItem('device_id');
-
-            fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'check_session',
-                    email: email,
-                    deviceId: deviceId
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.valid === true) {
-                    // Success -> Redirect
-                    window.location.href = courseName + '.html';
-                } else {
-                    // Fail -> Log them out
-                    alert("You have been logged out because you signed in on another device.");
-                    doLogout();
-                }
-            })
-            .catch(err => {
-                alert("Network error. Please try again.");
-                btnElement.innerText = originalText;
-                btnElement.disabled = false;
-            });
-        }
-
-        // --- SIGNUP ---
         function doSignup() {
             const name = document.getElementById('sign-name').value;
             const email = document.getElementById('sign-email').value;
@@ -464,7 +453,6 @@
             const msg = document.getElementById('msg-signup');
 
             if(!name || !email || !pass) { msg.innerText = "Fill required fields"; msg.className="error"; return; }
-
             btn.disabled = true; btn.innerText = "Creating Account...";
             
             fetch(API_URL, {
@@ -483,7 +471,6 @@
             });
         }
 
-        // --- RESET FLOW ---
         function requestResetCode() {
             const email = document.getElementById('reset-email').value;
             const btn = document.getElementById('btnForgot');
