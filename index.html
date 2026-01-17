@@ -3,421 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Revision Test | By Abinaya Samuel</title>
+    <title>Revision Test | Ultramodern Learning</title>
     
     <meta name="theme-color" content="#ffffff">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="ref.png">
 
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+
     <style>
-        :root {
-            --primary-orange: #F58220;
-            --primary-yellow: #FDB913;
-            --primary-blue: #0071BC;
-            --primary-green: #4DB848;
-            --bg-white: #ffffff;
-            --text-dark: #1a1a1a;
-            --text-grey: #666;
-            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; }
         
-        body {
-            font-family: var(--font-main);
-            background-color: var(--bg-white);
-            color: var(--text-dark);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* --- Navigation --- */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 5%;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-img {
-            height: 40px;
-            width: auto;
-        }
-
-        .brand-name {
-            font-weight: 800;
-            font-size: 1.2rem;
-            letter-spacing: -0.5px;
-        }
-
-        .brand-sub {
-            font-size: 0.7rem;
-            color: var(--text-grey);
-            font-weight: normal;
-            display: block;
-        }
-
-        .nav-links button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            margin-left: 15px;
-            padding: 8px 16px;
-            transition: 0.3s;
-        }
-
-        .btn-login {
-            background-color: var(--primary-blue) !important;
-            color: white;
-            border-radius: 20px;
-        }
-
-        .btn-scroll { color: var(--text-dark); }
-
-        /* --- Hero Section (Brutal Design) --- */
-        .hero {
-            padding: 80px 5%;
-            text-align: center;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            line-height: 1.1;
-            margin-bottom: 20px;
-            font-weight: 900;
-            background: -webkit-linear-gradient(45deg, var(--primary-orange), var(--primary-blue));
+        /* Custom Dopamine Gradient for Text */
+        .dopamine-text {
+            background: linear-gradient(to right, #6366f1, #ec4899, #f97316);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .hero p.brutal-sub {
-            font-size: 1.5rem;
-            color: var(--text-dark);
-            margin-bottom: 30px;
-            font-weight: 700;
+        /* Custom Button Gradient */
+        .btn-dopamine {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-dopamine:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(168, 85, 247, 0.4);
         }
 
-        .hero p.small-text {
-            color: var(--text-grey);
-            font-size: 1.1rem;
-            margin-bottom: 40px;
+        /* Glassmorphism for Modal */
+        .glass-modal {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
         }
-
-        /* --- Auth Modal --- */
-        #authModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.95);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .auth-box {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-            border: 1px solid #eee;
-        }
-
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #eee;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 10px;
-            text-align: center;
-            cursor: pointer;
-            font-weight: bold;
-            color: var(--text-grey);
-        }
-
-        .tab.active {
-            color: var(--primary-blue);
-            border-bottom: 2px solid var(--primary-blue);
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-            position: relative;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            top: 12px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            color: var(--primary-blue);
-            font-weight: bold;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary-green);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .link-text {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: var(--primary-blue);
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .loader {
-            display: none;
-            text-align: center;
-            margin-top: 10px;
-            color: var(--primary-blue);
-        }
-
-        /* --- Exam Grid --- */
-        .exam-section {
-            padding: 60px 5%;
-            background: #fafafa;
-        }
-
-        .exam-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 40px;
-        }
-
-        .exam-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            transition: transform 0.2s;
-            border-top: 5px solid var(--primary-blue);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .exam-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .exam-card h3 {
-            margin-bottom: 10px;
-            font-size: 1.4rem;
-        }
-
-        .exam-card p {
-            font-size: 0.9rem;
-            color: var(--text-grey);
-            margin-bottom: 20px;
-        }
-
-        .exam-action-btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            text-align: center;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .btn-locked {
-            background: white;
-            border: 2px solid var(--primary-orange);
-            color: var(--primary-orange);
-        }
-
-        .btn-locked:hover {
-            background: var(--primary-orange);
-            color: white;
-        }
-
-        .btn-unlocked {
-            background: var(--primary-green);
-            color: white;
-            border: 2px solid var(--primary-green);
-        }
-
-        /* --- Footer --- */
-        footer {
-            background: #111;
-            color: white;
-            padding: 40px 5%;
-            margin-top: 60px;
-            text-align: center;
-        }
-
-        .contact-info {
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: #888;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .hero p.brutal-sub { font-size: 1.2rem; }
-            nav { flex-direction: column; gap: 10px; }
-            .nav-links { width: 100%; display: flex; justify-content: center; }
-        }
+        
+        /* Smooth Scrolling */
+        html { scroll-behavior: smooth; }
     </style>
 </head>
-<body>
+<body class="bg-white text-slate-900 antialiased selection:bg-pink-200 selection:text-pink-900">
 
-    <nav>
-        <div class="logo-container">
-            <img src="ref.png" alt="Logo" class="logo-img">
-            <div>
-                <div class="brand-name">Revision Test</div>
-                <span class="brand-sub">By Abinaya Samuel</span>
+    <nav class="fixed w-full z-50 top-0 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <img src="ref.png" alt="Logo" class="h-10 w-auto hover:scale-105 transition-transform">
+                    <div class="flex flex-col">
+                        <span class="font-black text-xl tracking-tight text-slate-900">Revision Test</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">By Abinaya Samuel</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <button onclick="scrollToExams()" class="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors">Mock Tests</button>
+                    <button id="authBtn" onclick="openAuth()" class="btn-dopamine text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-md">
+                        Login / Sign Up
+                    </button>
+                    <button id="logoutBtn" onclick="handleLogout()" class="hidden text-sm font-bold text-slate-500 hover:text-red-500 transition-colors">
+                        Logout
+                    </button>
+                </div>
+
+                <div class="md:hidden flex items-center">
+                    <button onclick="openAuth()" id="mobileAuthBtn" class="text-indigo-600 font-bold text-sm">Login</button>
+                </div>
             </div>
-        </div>
-        <div class="nav-links">
-            <button class="btn-scroll" onclick="scrollToExams()">View Exams</button>
-            <button id="authBtn" class="btn-login" onclick="openAuth()">Login / Sign Up</button>
-            <button id="logoutBtn" class="btn-scroll" style="display:none;" onclick="handleLogout()">Logout</button>
         </div>
     </nav>
 
-    <section class="hero">
-        <h1>Big EdTech is Lying to You.</h1>
-        <p class="brutal-sub">Stop wasting time on 100-hour lectures. You don't need them.</p>
-        <p class="small-text">
-            They want you to pay for videos you'll never watch. We want you to pass. <br>
-            Learn today with ChatGPT & Gemini. <strong>Test yourself here.</strong>
-        </p>
-        <button class="btn-login" style="padding: 15px 40px; font-size: 1.1rem;" onclick="scrollToExams()">Start Practicing Now</button>
-    </section>
+    <div class="relative pt-32 pb-20 sm:pt-40 sm:pb-24 overflow-hidden">
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+            <h1 class="text-5xl sm:text-7xl font-black tracking-tight mb-6 leading-tight">
+                Big EdTech is <br>
+                <span class="dopamine-text">Lying to You.</span>
+            </h1>
+            
+            <p class="mt-4 text-2xl sm:text-3xl font-bold text-slate-800 max-w-3xl mx-auto">
+                Stop wasting time on 100-hour lectures.
+            </p>
+            
+            <p class="mt-4 text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto font-medium">
+                Today you can learn better with AI tools such as <span class="text-slate-900 font-bold">ChatGPT & Gemini</span>. 
+                They want you to pay for videos. We want you to pass.
+            </p>
 
-    <section class="exam-section" id="exams">
-        <h2 style="text-align: center;">Available Mock Tests</h2>
-        <div class="exam-grid" id="examGrid">
+            <div class="mt-10 flex justify-center gap-4">
+                <button onclick="scrollToExams()" class="btn-dopamine text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl shadow-indigo-200">
+                    Start Practicing Now
+                </button>
             </div>
-    </section>
+        </div>
+    </div>
 
-    <footer>
-        <h3>Revision Test</h3>
-        <div class="contact-info">
-            <p>Developed by Abinaya Samuel</p>
-            <p>Phone: +91 8754955367 | Email: revisiontestapp@gmail.com</p>
-            <p>&copy; 2026 Revision Test. All rights reserved.</p>
+    <div id="exams" class="bg-white relative py-20 border-t border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-black text-slate-900 tracking-tight">Select Your Exam</h2>
+                <p class="mt-4 text-slate-500">80+ Tests per category. Instant Access.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="examGrid">
+                </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-slate-100 py-12 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h3 class="font-black text-2xl text-slate-900 mb-4">Revision Test</h3>
+            <div class="text-slate-500 space-y-2 text-sm">
+                <p>Developed by Abinaya Samuel</p>
+                <p>Contact: +91 8754955367 | revisiontestapp@gmail.com</p>
+                <p>&copy; 2026 Revision Test. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
-    <div id="authModal">
-        <div class="auth-box">
-            <div style="text-align: right;"><span style="cursor:pointer; font-size: 1.5rem;" onclick="closeAuth()">&times;</span></div>
+    <div id="authModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-900/30 backdrop-blur-sm p-4">
+        <div class="glass-modal w-full max-w-md rounded-2xl shadow-2xl p-8 border border-white/50 relative transform transition-all">
+            <button onclick="closeAuth()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 text-2xl font-bold">&times;</button>
             
-            <div class="auth-tabs" id="tabHeaders">
-                <div class="tab active" onclick="switchTab('login')">Login</div>
-                <div class="tab" onclick="switchTab('signup')">Sign Up</div>
+            <div class="flex mb-8 border-b border-slate-200" id="tabHeaders">
+                <button onclick="switchTab('login')" class="flex-1 pb-4 text-sm font-bold text-indigo-600 border-b-2 border-indigo-600 transition-all tab-btn">Login</button>
+                <button onclick="switchTab('signup')" class="flex-1 pb-4 text-sm font-bold text-slate-400 hover:text-indigo-600 transition-all tab-btn">Sign Up</button>
             </div>
 
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="input-group">
-                    <input type="email" id="loginEmail" placeholder="Email Address" required>
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <input type="email" id="loginEmail" placeholder="Email Address" required 
+                    class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all font-medium">
+                
+                <div class="relative">
+                    <input type="password" id="loginPass" placeholder="Password" required 
+                        class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all font-medium">
+                    <span onclick="togglePass('loginPass')" class="absolute right-4 top-3.5 cursor-pointer text-slate-400 hover:text-indigo-600">👁️</span>
                 </div>
-                <div class="input-group">
-                    <input type="password" id="loginPass" placeholder="Password" required>
-                    <span class="toggle-password" onclick="togglePass('loginPass')">👁️</span>
-                </div>
-                <button type="submit" class="btn-submit">Login</button>
-                <div class="link-text" onclick="showForgot()">Forgot Password?</div>
+
+                <button type="submit" class="w-full btn-dopamine text-white py-3.5 rounded-lg font-bold shadow-lg mt-2">Login to Dashboard</button>
+                <p onclick="showForgot()" class="text-center text-xs font-bold text-indigo-500 cursor-pointer mt-4 hover:underline">Forgot Password?</p>
             </form>
 
-            <form id="signupForm" style="display:none;" onsubmit="handleSignup(event)">
-                <div class="input-group">
-                    <input type="text" id="regName" placeholder="Full Name" required>
+            <form id="signupForm" onsubmit="handleSignup(event)" class="space-y-4 hidden">
+                <input type="text" id="regName" placeholder="Full Name" required 
+                    class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-200 font-medium">
+                <input type="email" id="regEmail" placeholder="Email Address" required 
+                    class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-200 font-medium">
+                <input type="tel" id="regPhone" placeholder="Phone Number" required 
+                    class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-200 font-medium">
+                
+                <div class="relative">
+                    <input type="password" id="regPass" placeholder="Create Password" required 
+                        class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-200 font-medium">
+                    <span onclick="togglePass('regPass')" class="absolute right-4 top-3.5 cursor-pointer text-slate-400 hover:text-indigo-600">👁️</span>
                 </div>
-                <div class="input-group">
-                    <input type="email" id="regEmail" placeholder="Email Address" required>
-                </div>
-                <div class="input-group">
-                    <input type="tel" id="regPhone" placeholder="Phone Number" required>
-                </div>
-                <div class="input-group">
-                    <input type="password" id="regPass" placeholder="Password" required>
-                    <span class="toggle-password" onclick="togglePass('regPass')">👁️</span>
-                </div>
-                <button type="submit" class="btn-submit">Create Account</button>
+
+                <button type="submit" class="w-full btn-dopamine text-white py-3.5 rounded-lg font-bold shadow-lg mt-2">Create Account</button>
             </form>
 
-            <form id="forgotForm" style="display:none;" onsubmit="handleForgot(event)">
-                <h3 style="text-align:center; margin-bottom:15px;">Reset Password</h3>
-                <div class="input-group">
-                    <input type="email" id="forgotEmail" placeholder="Enter your registered email" required>
-                </div>
-                <button type="submit" class="btn-submit">Send Reset Code</button>
-                <div class="link-text" onclick="switchTab('login')">Back to Login</div>
+            <form id="forgotForm" onsubmit="handleForgot(event)" class="space-y-4 hidden">
+                <h3 class="text-center font-bold text-slate-900 text-lg">Reset Password</h3>
+                <p class="text-center text-xs text-slate-500 mb-4">We'll send a code to your email.</p>
+                <input type="email" id="forgotEmail" placeholder="Registered Email" required class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-200">
+                <button type="submit" class="w-full bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-slate-800 transition">Send Code</button>
+                <p onclick="switchTab('login')" class="text-center text-xs font-bold text-slate-400 cursor-pointer hover:text-slate-600">Back to Login</p>
             </form>
 
-            <form id="resetForm" style="display:none;" onsubmit="handleReset(event)">
-                <h3 style="text-align:center; margin-bottom:15px;">Enter New Password</h3>
-                <p style="font-size:0.8rem; text-align:center; color:green; margin-bottom:10px;">Check your email for the code!</p>
-                <div class="input-group">
-                    <input type="text" id="resetCode" placeholder="Enter 6-digit Code" required>
-                </div>
-                <div class="input-group">
-                    <input type="password" id="newPass" placeholder="New Password" required>
-                </div>
-                <button type="submit" class="btn-submit">Update Password</button>
+            <form id="resetForm" onsubmit="handleReset(event)" class="space-y-4 hidden">
+                <h3 class="text-center font-bold text-slate-900 text-lg">New Password</h3>
+                <p class="text-center text-xs text-green-600 font-bold">Code sent! Check your inbox.</p>
+                <input type="text" id="resetCode" placeholder="Enter 6-digit Code" required class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-200">
+                <input type="password" id="newPass" placeholder="New Password" required class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-200">
+                <button type="submit" class="w-full btn-dopamine text-white py-3 rounded-lg font-bold shadow-lg">Update Password</button>
             </form>
-            
-            <div id="authLoader" class="loader">Processing... Please wait.</div>
-            <p id="authMessage" style="text-align: center; margin-top: 10px; color: red; font-size: 0.9rem;"></p>
+
+            <div id="authLoader" class="hidden text-center mt-4 text-indigo-600 font-bold text-sm animate-pulse">Processing...</div>
+            <p id="authMessage" class="text-center mt-4 text-sm font-bold text-red-500"></p>
         </div>
     </div>
 
     <script>
         // --- CONFIGURATION ---
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxF8qO1a2BzRHZ6DDfZmHecCQZQWr_-Hvs5ddIEumwvVGAL8HDf81JIbUXiM9c8nFzb/exec'; // <--- PASTE YOUR DEPLOYED URL
-        const API_KEY = 'ldbvay88end89u3lrcx38yy83b@43smsvfiop'; // <--- MUST MATCH THE KEY IN YOUR GOOGLE SHEET SCRIPT
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxF8qO1a2BzRHZ6DDfZmHecCQZQWr_-Hvs5ddIEumwvVGAL8HDf81JIbUXiM9c8nFzb/exec'; 
+        const API_KEY = 'ldbvay88end89u3lrcx38yy83b@43smsvfiop'; 
 
-        // Exam Data & Pricing
+        // Exam Data
         const exams = [
             { id: 'NEET', name: 'NEET', html: 'NEET.html', price: '₹1499', dummyLink: 'www.razorapy.com_neet' },
-            { id: 'JEE', name: 'JEE Mains & Advanced', html: 'JEE.html', price: '₹1499', dummyLink: 'www.razorapy.com_jee' },
+            { id: 'JEE', name: 'JEE Mains & Adv', html: 'JEE.html', price: '₹1499', dummyLink: 'www.razorapy.com_jee' },
             { id: 'UPSC', name: 'UPSC CSE', html: 'UPSC.html', price: '₹1999', dummyLink: 'www.razorapy.com_upsc' },
             { id: 'SSC_CGL', name: 'SSC CGL', html: 'SSC_CGL.html', price: '₹699', dummyLink: 'www.razorapy.com_ssc_cgl' },
             { id: 'SSC_CHSL', name: 'SSC CHSL', html: 'SSC_CHSL.html', price: '₹499', dummyLink: 'www.razorapy.com_ssc_chsl' },
@@ -428,25 +201,26 @@
             { id: 'HAAD', name: 'HAAD', html: 'HAAD.html', price: '₹2499', dummyLink: 'www.razorapy.com_haad' }
         ];
 
-        // --- APP LOGIC ---
+        // --- CORE FUNCTIONS ---
 
         function init() {
             checkLoginStatus();
             renderExams();
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(console.error);
-            }
+            if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
         }
 
         function checkLoginStatus() {
             const user = JSON.parse(localStorage.getItem('currentUser'));
             if (user) {
                 document.getElementById('authBtn').style.display = 'none';
-                document.getElementById('logoutBtn').style.display = 'inline-block';
-                document.getElementById('logoutBtn').textContent = `Logout (${user.name.split(' ')[0]})`;
+                // Show logout in desktop and text in mobile
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                document.getElementById('logoutBtn').innerText = `Logout (${user.name.split(' ')[0]})`;
+                document.getElementById('mobileAuthBtn').innerText = `Logout`;
+                document.getElementById('mobileAuthBtn').onclick = handleLogout;
             } else {
-                document.getElementById('authBtn').style.display = 'inline-block';
-                document.getElementById('logoutBtn').style.display = 'none';
+                document.getElementById('authBtn').style.display = 'block';
+                document.getElementById('logoutBtn').classList.add('hidden');
             }
         }
 
@@ -458,7 +232,8 @@
 
             exams.forEach(exam => {
                 const card = document.createElement('div');
-                card.className = 'exam-card';
+                // Tailwind classes for the card
+                card.className = 'group bg-white rounded-2xl p-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_60px_-15px_rgba(99,102,241,0.2)] transition-all duration-300 border border-slate-100 flex flex-col justify-between';
                 
                 let hasAccess = false;
                 if (user && user.access && user.access[exam.id] === true) {
@@ -467,15 +242,16 @@
 
                 let buttonHtml = '';
                 if (hasAccess) {
-                    buttonHtml = `<a href="${exam.html}" class="exam-action-btn btn-unlocked">Start Test</a>`;
+                    buttonHtml = `<a href="${exam.html}" class="block w-full text-center py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow-lg shadow-green-200 transition-all transform hover:scale-[1.02]">Enter Exam</a>`;
                 } else {
-                    buttonHtml = `<a href="https://${exam.dummyLink}" target="_blank" class="exam-action-btn btn-locked">Unlock for ${exam.price}</a>`;
+                    buttonHtml = `<a href="https://${exam.dummyLink}" target="_blank" class="block w-full text-center py-3 border-2 border-slate-900 text-slate-900 font-bold rounded-lg hover:bg-slate-900 hover:text-white transition-all">Unlock for ${exam.price}</a>`;
                 }
 
                 card.innerHTML = `
-                    <div>
-                        <h3>${exam.name}</h3>
-                        <p>Complete Mock Test Series. 80+ Tests included.</p>
+                    <div class="mb-6">
+                        <div class="h-12 w-12 bg-indigo-50 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">📝</div>
+                        <h3 class="text-2xl font-black text-slate-900 mb-2">${exam.name}</h3>
+                        <p class="text-slate-500 font-medium text-sm">Comprehensive Mock Series. <br>AI-Enhanced Analysis.</p>
                     </div>
                     ${buttonHtml}
                 `;
@@ -483,14 +259,22 @@
             });
         }
 
-        // --- AUTH UI FUNCTIONS ---
+        // --- AUTH UI ---
 
-        function openAuth() { document.getElementById('authModal').style.display = 'flex'; }
-        function closeAuth() { document.getElementById('authModal').style.display = 'none'; }
+        function openAuth() { 
+            document.getElementById('authModal').classList.remove('hidden');
+            document.getElementById('authModal').classList.add('flex');
+        }
+        function closeAuth() { 
+            document.getElementById('authModal').classList.add('hidden');
+            document.getElementById('authModal').classList.remove('flex');
+        }
         
         function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            // Reset views
+            const btns = document.querySelectorAll('.tab-btn');
+            btns[0].className = tab === 'login' ? 'flex-1 pb-4 text-sm font-bold text-indigo-600 border-b-2 border-indigo-600 transition-all tab-btn' : 'flex-1 pb-4 text-sm font-bold text-slate-400 hover:text-indigo-600 transition-all tab-btn';
+            btns[1].className = tab === 'signup' ? 'flex-1 pb-4 text-sm font-bold text-indigo-600 border-b-2 border-indigo-600 transition-all tab-btn' : 'flex-1 pb-4 text-sm font-bold text-slate-400 hover:text-indigo-600 transition-all tab-btn';
+
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('signupForm').style.display = 'none';
             document.getElementById('forgotForm').style.display = 'none';
@@ -498,23 +282,16 @@
             document.getElementById('tabHeaders').style.display = 'flex';
 
             if(tab === 'login') {
-                document.querySelector('.tab:nth-child(1)').classList.add('active');
                 document.getElementById('loginForm').style.display = 'block';
             } else {
-                document.querySelector('.tab:nth-child(2)').classList.add('active');
                 document.getElementById('signupForm').style.display = 'block';
             }
         }
 
         function showForgot() {
             document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('tabHeaders').style.display = 'none'; // Hide tabs
+            document.getElementById('tabHeaders').style.display = 'none'; 
             document.getElementById('forgotForm').style.display = 'block';
-        }
-
-        function showReset() {
-            document.getElementById('forgotForm').style.display = 'none';
-            document.getElementById('resetForm').style.display = 'block';
         }
 
         function togglePass(id) {
@@ -531,7 +308,7 @@
             location.reload();
         }
 
-        // --- BACKEND API CALLS ---
+        // --- DATA HANDLING ---
 
         function showLoader(show) {
             document.getElementById('authLoader').style.display = show ? 'block' : 'none';
@@ -540,7 +317,7 @@
         function showMsg(msg, color='red') {
             const el = document.getElementById('authMessage');
             el.innerText = msg;
-            el.style.color = color;
+            el.className = color === 'green' ? 'text-center mt-4 text-sm font-bold text-green-600' : 'text-center mt-4 text-sm font-bold text-red-500';
         }
 
         async function postData(action, data) {
@@ -549,7 +326,7 @@
             try {
                 const formData = new FormData();
                 formData.append('action', action);
-                formData.append('apiKey', API_KEY); // SECURE API KEY
+                formData.append('apiKey', API_KEY); 
                 
                 for (const key in data) {
                     formData.append(key, data[key]);
@@ -588,7 +365,7 @@
                 email: document.getElementById('regEmail').value,
                 phone: document.getElementById('regPhone').value,
                 password: document.getElementById('regPass').value,
-                deviceId: navigator.userAgent // Simple device tracking
+                deviceId: navigator.userAgent 
             });
 
             if (res.success) {
@@ -600,23 +377,24 @@
             }
         }
 
-        // 1. Send Forgot Password Code
         async function handleForgot(e) {
             e.preventDefault();
             const email = document.getElementById('forgotEmail').value;
             const res = await postData('forgot_password', { email: email });
 
             if (res.success) {
-                // Store email temporarily for next step
                 localStorage.setItem('resetEmail', email);
                 showMsg('Code sent! Check Email.', 'green');
-                setTimeout(() => { showReset(); }, 1500);
+                setTimeout(() => { 
+                    document.getElementById('forgotForm').style.display = 'none';
+                    document.getElementById('resetForm').style.display = 'block';
+                    showMsg('', 'green'); // clear msg
+                }, 1500);
             } else {
                 showMsg(res.message);
             }
         }
 
-        // 2. Verify Code & Update Password
         async function handleReset(e) {
             e.preventDefault();
             const res = await postData('reset_password', {
@@ -633,7 +411,7 @@
             }
         }
 
-        // Initialize App
+        // Init
         window.onload = init;
 
     </script>
