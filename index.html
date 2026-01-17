@@ -3,521 +3,639 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Revision Test Portal</title>
+    <title>Revision Test | By Abinaya Samuel</title>
+    
+    <meta name="theme-color" content="#ffffff">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="ref.png">
+
     <style>
-        /* --- BRAND COLORS --- */
         :root {
-            --orange: #f57f20;
-            --yellow: #fdbd10;
-            --blue: #00a0e3;
-            --dark-blue: #2e6db4;
-            --green: #43b049;
-            --bg: #ffffff;
-            --text-main: #333333;
+            --primary-orange: #F58220;
+            --primary-yellow: #FDB913;
+            --primary-blue: #0071BC;
+            --primary-green: #4DB848;
+            --bg-white: #ffffff;
+            --text-dark: #1a1a1a;
+            --text-grey: #666;
+            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            font-family: var(--font-main);
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); 
-            width: 100%;
-            max-width: 420px;
-            text-align: center;
-            border-top: 5px solid var(--blue);
-            position: relative;
-        }
-
-        /* --- DASHBOARD HEADER --- */
-        .dash-header {
+        /* --- Navigation --- */
+        nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .dash-title {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: var(--dark-blue);
-            margin: 0;
+            padding: 15px 5%;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        .logout-btn {
-            font-size: 0.85rem;
-            color: #dc2626;
-            cursor: pointer;
-            font-weight: 600;
-            background: none;
-            border: none;
-            padding: 0;
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-img {
+            height: 40px;
             width: auto;
-            margin: 0;
-        }
-        .logout-btn:hover { text-decoration: underline; }
-
-        /* --- LOGO & TITLE (Login Screen) --- */
-        .app-logo {
-            width: 100px; 
-            height: auto;
-            margin-bottom: 0.5rem;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
         }
 
-        .main-title {
-            font-size: 1.5rem;
+        .brand-name {
             font-weight: 800;
-            color: var(--dark-blue);
-            margin: 0 0 1.5rem 0;
+            font-size: 1.2rem;
             letter-spacing: -0.5px;
         }
 
-        h2 { color: var(--dark-blue); margin-bottom: 0.5rem; font-weight: 700; font-size: 1.2rem; }
-        p { color: #666; font-size: 0.95rem; margin-bottom: 1.5rem; }
+        .brand-sub {
+            font-size: 0.7rem;
+            color: var(--text-grey);
+            font-weight: normal;
+            display: block;
+        }
 
-        /* --- FORMS --- */
-        label { display: block; text-align: left; margin-bottom: 5px; color: var(--dark-blue); font-weight: 600; font-size: 0.9rem; }
-        .input-group { position: relative; margin-bottom: 15px; }
+        .nav-links button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            margin-left: 15px;
+            padding: 8px 16px;
+            transition: 0.3s;
+        }
 
-        input {
+        .btn-login {
+            background-color: var(--primary-blue) !important;
+            color: white;
+            border-radius: 20px;
+        }
+
+        .btn-scroll { color: var(--text-dark); }
+
+        /* --- Hero Section (Brutal Design) --- */
+        .hero {
+            padding: 80px 5%;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            font-weight: 900;
+            background: -webkit-linear-gradient(45deg, var(--primary-orange), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p.brutal-sub {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .hero p.small-text {
+            color: var(--text-grey);
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        /* --- Auth Modal --- */
+        #authModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .auth-box {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #eee;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--text-grey);
+        }
+
+        .tab.active {
+            color: var(--primary-blue);
+            border-bottom: 2px solid var(--primary-blue);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .input-group input {
             width: 100%;
             padding: 12px;
-            padding-right: 40px; 
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 6px;
             font-size: 1rem;
-            transition: border-color 0.2s;
         }
-        input:focus { border-color: var(--blue); outline: none; }
 
         .toggle-password {
             position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
+            right: 10px;
+            top: 12px;
             cursor: pointer;
-            color: #999;
-            font-size: 1.1rem;
-            user-select: none;
+            font-size: 0.9rem;
+            color: var(--primary-blue);
+            font-weight: bold;
         }
-        .toggle-password:hover { color: var(--blue); }
 
-        /* --- BUTTONS --- */
-        button.action-btn {
+        .btn-submit {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--blue), var(--green));
+            padding: 12px;
+            background: var(--primary-green);
             color: white;
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 6px;
             font-size: 1rem;
             font-weight: bold;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-bottom: 10px;
-        }
-        button.action-btn:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 4px 10px rgba(0, 160, 227, 0.3);
-        }
-        button:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
-
-        /* --- DASHBOARD GRID --- */
-        .course-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px;
+            cursor: pointer;
             margin-top: 10px;
         }
-        
-        .course-btn {
-            background: white;
-            border: 2px solid var(--blue);
-            color: var(--dark-blue);
-            padding: 15px 5px;
-            font-size: 0.95rem;
-            border-radius: 8px;
+
+        .link-text {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--primary-blue);
             cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 600;
-            width: 100%; 
-        }
-        .course-btn:hover { 
-            background: var(--blue); color: white; transform: translateY(-2px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .course-btn:disabled {
-            background: #f4f4f4; color: #999; border-color: #ddd; cursor: wait;
+            text-decoration: underline;
         }
 
-        .link { color: var(--dark-blue); cursor: pointer; text-decoration: none; font-size: 0.9rem; display: block; margin-top: 15px; }
-        .link:hover { text-decoration: underline; color: var(--orange); }
+        .loader {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            color: var(--primary-blue);
+        }
 
-        .hidden { display: none !important; }
-        .error { color: #dc2626; font-size: 0.9rem; margin-top: 10px; font-weight: bold;}
+        /* --- Exam Grid --- */
+        .exam-section {
+            padding: 60px 5%;
+            background: #fafafa;
+        }
+
+        .exam-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .exam-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            transition: transform 0.2s;
+            border-top: 5px solid var(--primary-blue);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .exam-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .exam-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+
+        .exam-card p {
+            font-size: 0.9rem;
+            color: var(--text-grey);
+            margin-bottom: 20px;
+        }
+
+        .exam-action-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            text-align: center;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-locked {
+            background: white;
+            border: 2px solid var(--primary-orange);
+            color: var(--primary-orange);
+        }
+
+        .btn-locked:hover {
+            background: var(--primary-orange);
+            color: white;
+        }
+
+        .btn-unlocked {
+            background: var(--primary-green);
+            color: white;
+            border: 2px solid var(--primary-green);
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: #111;
+            color: white;
+            padding: 40px 5%;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .contact-info {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero p.brutal-sub { font-size: 1.2rem; }
+            nav { flex-direction: column; gap: 10px; }
+            .nav-links { width: 100%; display: flex; justify-content: center; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        
-        <div id="main-header">
-            <img src="https://lh3.googleusercontent.com/d/1LGuphhLdW2lTGeyZoY_ZUiyvEkl3mzfM" alt="Logo" class="app-logo">
-            <h1 class="main-title">Revision Test</h1>
+    <nav>
+        <div class="logo-container">
+            <img src="ref.png" alt="Logo" class="logo-img">
+            <div>
+                <div class="brand-name">Revision Test</div>
+                <span class="brand-sub">By Abinaya Samuel</span>
+            </div>
         </div>
+        <div class="nav-links">
+            <button class="btn-scroll" onclick="scrollToExams()">View Exams</button>
+            <button id="authBtn" class="btn-login" onclick="openAuth()">Login / Sign Up</button>
+            <button id="logoutBtn" class="btn-scroll" style="display:none;" onclick="handleLogout()">Logout</button>
+        </div>
+    </nav>
 
-        <div id="view-login">
-            <h2>Welcome Back</h2>
-            <p>Login to access your revision tests</p>
+    <section class="hero">
+        <h1>Big EdTech is Lying to You.</h1>
+        <p class="brutal-sub">Stop wasting time on 100-hour lectures. You don't need them.</p>
+        <p class="small-text">
+            They want you to pay for videos you'll never watch. We want you to pass. <br>
+            Learn today with ChatGPT & Gemini. <strong>Test yourself here.</strong>
+        </p>
+        <button class="btn-login" style="padding: 15px 40px; font-size: 1.1rem;" onclick="scrollToExams()">Start Practicing Now</button>
+    </section>
+
+    <section class="exam-section" id="exams">
+        <h2 style="text-align: center;">Available Mock Tests</h2>
+        <div class="exam-grid" id="examGrid">
+            </div>
+    </section>
+
+    <footer>
+        <h3>Revision Test</h3>
+        <div class="contact-info">
+            <p>Developed by Abinaya Samuel</p>
+            <p>Phone: +91 8754955367 | Email: revisiontestapp@gmail.com</p>
+            <p>&copy; 2026 Revision Test. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div id="authModal">
+        <div class="auth-box">
+            <div style="text-align: right;"><span style="cursor:pointer; font-size: 1.5rem;" onclick="closeAuth()">&times;</span></div>
             
-            <label>Email Address</label>
-            <div class="input-group">
-                <input type="email" id="login-email" placeholder="name@example.com">
+            <div class="auth-tabs" id="tabHeaders">
+                <div class="tab active" onclick="switchTab('login')">Login</div>
+                <div class="tab" onclick="switchTab('signup')">Sign Up</div>
             </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <input type="email" id="loginEmail" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="loginPass" placeholder="Password" required>
+                    <span class="toggle-password" onclick="togglePass('loginPass')">👁️</span>
+                </div>
+                <button type="submit" class="btn-submit">Login</button>
+                <div class="link-text" onclick="showForgot()">Forgot Password?</div>
+            </form>
+
+            <form id="signupForm" style="display:none;" onsubmit="handleSignup(event)">
+                <div class="input-group">
+                    <input type="text" id="regName" placeholder="Full Name" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="regEmail" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <input type="tel" id="regPhone" placeholder="Phone Number" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="regPass" placeholder="Password" required>
+                    <span class="toggle-password" onclick="togglePass('regPass')">👁️</span>
+                </div>
+                <button type="submit" class="btn-submit">Create Account</button>
+            </form>
+
+            <form id="forgotForm" style="display:none;" onsubmit="handleForgot(event)">
+                <h3 style="text-align:center; margin-bottom:15px;">Reset Password</h3>
+                <div class="input-group">
+                    <input type="email" id="forgotEmail" placeholder="Enter your registered email" required>
+                </div>
+                <button type="submit" class="btn-submit">Send Reset Code</button>
+                <div class="link-text" onclick="switchTab('login')">Back to Login</div>
+            </form>
+
+            <form id="resetForm" style="display:none;" onsubmit="handleReset(event)">
+                <h3 style="text-align:center; margin-bottom:15px;">Enter New Password</h3>
+                <p style="font-size:0.8rem; text-align:center; color:green; margin-bottom:10px;">Check your email for the code!</p>
+                <div class="input-group">
+                    <input type="text" id="resetCode" placeholder="Enter 6-digit Code" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="newPass" placeholder="New Password" required>
+                </div>
+                <button type="submit" class="btn-submit">Update Password</button>
+            </form>
             
-            <label>Password</label>
-            <div class="input-group">
-                <input type="password" id="login-pass" placeholder="Enter password">
-                <span class="toggle-password" onclick="togglePass('login-pass')">👁️</span>
-            </div>
-            
-            <button onclick="doLogin()" id="btnLogin" class="action-btn">Login</button>
-            <p id="msg-login" class="error"></p>
-
-            <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                <span class="link" onclick="switchView('view-signup')">New User? <b>Create Account</b></span>
-                <span class="link" style="color:#666; font-size:0.85rem;" onclick="switchView('view-forgot')">Forgot Password?</span>
-            </div>
+            <div id="authLoader" class="loader">Processing... Please wait.</div>
+            <p id="authMessage" style="text-align: center; margin-top: 10px; color: red; font-size: 0.9rem;"></p>
         </div>
-
-        <div id="view-dashboard" class="hidden">
-            <div class="dash-header">
-                <span class="dash-title">Revision Test</span>
-                <button class="logout-btn" onclick="doLogout()">Logout</button>
-            </div>
-
-            <p style="margin-bottom: 10px;">Select your exam:</p>
-            
-            <div class="course-grid">
-                <button class="course-btn" onclick="openCourse('BANKING', this)">Banking</button>
-                <button class="course-btn" onclick="openCourse('IELTS', this)">IELTS</button>
-                <button class="course-btn" onclick="openCourse('JEE', this)">JEE</button>
-                <button class="course-btn" onclick="openCourse('NEET', this)">NEET</button>
-                <button class="course-btn" onclick="openCourse('NCLEXRN', this)">NCLEX-RN</button>
-                <button class="course-btn" onclick="openCourse('HAAD', this)">HAAD</button>
-                <button class="course-btn" onclick="openCourse('RRB_NTPC', this)">RRB NTPC</button>
-                <button class="course-btn" onclick="openCourse('SSC_CGL', this)">SSC CGL</button>
-                <button class="course-btn" onclick="openCourse('SSC_CHSL', this)">SSC CHSL</button>
-                <button class="course-btn" onclick="openCourse('UPSC', this)">UPSC</button>
-            </div>
-        </div>
-
-        <div id="view-signup" class="hidden">
-            <h2 style="color:var(--orange)">Create Account</h2>
-            <p>Join Revision Test today</p>
-            <div class="input-group"><input type="text" id="sign-name" placeholder="Full Name"></div>
-            <div class="input-group"><input type="email" id="sign-email" placeholder="Email Address"></div>
-            <div class="input-group"><input type="text" id="sign-phone" placeholder="Phone Number"></div>
-            <div class="input-group">
-                <input type="password" id="sign-pass" placeholder="Create Password">
-                <span class="toggle-password" onclick="togglePass('sign-pass')">👁️</span>
-            </div>
-            <input type="hidden" id="sign-device">
-            <button onclick="doSignup()" id="btnSignup" class="action-btn" style="background: var(--orange);">Sign Up Now</button>
-            <p id="msg-signup"></p>
-            <span class="link" onclick="switchView('view-login')">Back to Login</span>
-        </div>
-
-        <div id="view-forgot" class="hidden">
-            <h2>Reset Password</h2>
-            <p>Enter your email to receive a code.</p>
-            <div class="input-group"><input type="email" id="reset-email" placeholder="Your Email"></div>
-            <button onclick="requestResetCode()" id="btnForgot" class="action-btn" style="background: var(--dark-blue);">Send Code</button>
-            <p id="msg-forgot"></p>
-            <span class="link" onclick="switchView('view-login')">Back to Login</span>
-        </div>
-
-        <div id="view-confirm" class="hidden">
-            <h2>New Password</h2>
-            <p>Check your email for the code.</p>
-            <div class="input-group"><input type="text" id="confirm-code" placeholder="6-Digit Code"></div>
-            <div class="input-group">
-                <input type="password" id="confirm-pass" placeholder="New Password">
-                <span class="toggle-password" onclick="togglePass('confirm-pass')">👁️</span>
-            </div>
-            <button onclick="confirmReset()" id="btnConfirm" class="action-btn" style="background: var(--green);">Update Password</button>
-            <p id="msg-confirm"></p>
-        </div>
-        
-        <div id="view-payment" class="hidden" style="text-align:center;">
-             <h2 style="color:var(--orange);">Access Required</h2>
-             <p>You have not purchased this exam pack yet.</p>
-             <button onclick="window.location.href='YOUR_PAYMENT_LINK_HERE'" class="action-btn">Buy Access Now</button>
-             <button class="link" style="background:none; border:none; color:var(--dark-blue);" onclick="switchView('view-dashboard')">Back to Dashboard</button>
-        </div>
-
     </div>
 
     <script>
-        // CONFIGURATION
-        const API_URL = 'https://script.google.com/macros/s/AKfycbw24cXDfSGWeCFArLeTLUItlBEPn3ibDBtHOCZm1NKqFDKVhcODdBU5N3H_wRd5_e2j/exec'; 
+        // --- CONFIGURATION ---
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxF8qO1a2BzRHZ6DDfZmHecCQZQWr_-Hvs5ddIEumwvVGAL8HDf81JIbUXiM9c8nFzb/exec'; // <--- PASTE YOUR DEPLOYED URL
+        const API_KEY = 'ldbvay88end89u3lrcx38yy83b@43smsvfiop'; // <--- MUST MATCH THE KEY IN YOUR GOOGLE SHEET SCRIPT
 
-        // State
-        let userAccess = {}; 
-        let sessionTimer = null; // Stores the interval ID
+        // Exam Data & Pricing
+        const exams = [
+            { id: 'NEET', name: 'NEET', html: 'NEET.html', price: '₹1499', dummyLink: 'www.razorapy.com_neet' },
+            { id: 'JEE', name: 'JEE Mains & Advanced', html: 'JEE.html', price: '₹1499', dummyLink: 'www.razorapy.com_jee' },
+            { id: 'UPSC', name: 'UPSC CSE', html: 'UPSC.html', price: '₹1999', dummyLink: 'www.razorapy.com_upsc' },
+            { id: 'SSC_CGL', name: 'SSC CGL', html: 'SSC_CGL.html', price: '₹699', dummyLink: 'www.razorapy.com_ssc_cgl' },
+            { id: 'SSC_CHSL', name: 'SSC CHSL', html: 'SSC_CHSL.html', price: '₹499', dummyLink: 'www.razorapy.com_ssc_chsl' },
+            { id: 'BANKING', name: 'Banking (IBPS/SBI)', html: 'BANKING.html', price: '₹799', dummyLink: 'www.razorapy.com_banking' },
+            { id: 'RRB_NTPC', name: 'RRB NTPC', html: 'RRB_NTPC.html', price: '₹499', dummyLink: 'www.razorapy.com_rrb' },
+            { id: 'IELTS', name: 'IELTS', html: 'IELTS.html', price: '₹1299', dummyLink: 'www.razorapy.com_ielts' },
+            { id: 'NCLEXRN', name: 'NCLEX-RN', html: 'NCLEXRN.html', price: '₹2499', dummyLink: 'www.razorapy.com_nclex' },
+            { id: 'HAAD', name: 'HAAD', html: 'HAAD.html', price: '₹2499', dummyLink: 'www.razorapy.com_haad' }
+        ];
 
-        // 1. INITIALIZE
-        window.onload = function() {
-            document.getElementById('sign-device').value = getDeviceId();
+        // --- APP LOGIC ---
 
-            const storedEmail = localStorage.getItem('userEmail');
-            const storedAccess = localStorage.getItem('userAccess');
-
-            if (storedEmail && storedAccess) {
-                userAccess = JSON.parse(storedAccess);
-                switchView('view-dashboard');
+        function init() {
+            checkLoginStatus();
+            renderExams();
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(console.error);
             }
-        };
-
-        // 2. BACKGROUND MONITOR (The Fix for "Depend on Click")
-        function startSessionMonitor() {
-            // Stop any existing timer
-            if(sessionTimer) clearInterval(sessionTimer);
-            
-            // Run check immediately, then every 5 seconds
-            checkSessionSilent();
-            sessionTimer = setInterval(checkSessionSilent, 5000); 
         }
 
-        function checkSessionSilent() {
-            const email = localStorage.getItem('userEmail');
-            const deviceId = localStorage.getItem('device_id');
-            
-            if(!email || !deviceId) return; // Not logged in
+        function checkLoginStatus() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user) {
+                document.getElementById('authBtn').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'inline-block';
+                document.getElementById('logoutBtn').textContent = `Logout (${user.name.split(' ')[0]})`;
+            } else {
+                document.getElementById('authBtn').style.display = 'inline-block';
+                document.getElementById('logoutBtn').style.display = 'none';
+            }
+        }
 
-            fetch(API_URL, {
-                method: 'POST',
-                // Use 'no-cors' if you just want to trigger, but we need response. 
-                // Standard fetch works fine with GAS web app returning JSON.
-                body: JSON.stringify({ action: 'check_session', email: email, deviceId: deviceId })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.valid === false) {
-                    // SESSION INVALID! KILL IT IMMEDIATELY
-                    clearInterval(sessionTimer); // Stop checking
-                    alert("Security Alert: You have logged in on another device. You will be logged out here.");
-                    doLogout();
+        function renderExams() {
+            const grid = document.getElementById('examGrid');
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            
+            grid.innerHTML = ''; 
+
+            exams.forEach(exam => {
+                const card = document.createElement('div');
+                card.className = 'exam-card';
+                
+                let hasAccess = false;
+                if (user && user.access && user.access[exam.id] === true) {
+                    hasAccess = true;
                 }
-            })
-            .catch(err => console.log("Background check skipped (network)"));
-        }
 
-        // 3. COURSE CLICK HANDLER
-        function openCourse(courseName, btnElement) {
-            // A. Check Payment (Local)
-            if (!userAccess || userAccess[courseName] !== true) {
-                switchView('view-payment');
-                return;
-            }
-
-            // B. Visual Feedback
-            const originalText = btnElement.innerText;
-            btnElement.innerText = "Opening...";
-            btnElement.disabled = true;
-
-            // C. Final Security Check (Double verification)
-            const email = localStorage.getItem('userEmail');
-            const deviceId = localStorage.getItem('device_id');
-
-            fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'check_session', email: email, deviceId: deviceId })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.valid === true) {
-                    // Success: Redirect
-                    window.location.href = courseName + '.html';
+                let buttonHtml = '';
+                if (hasAccess) {
+                    buttonHtml = `<a href="${exam.html}" class="exam-action-btn btn-unlocked">Start Test</a>`;
                 } else {
-                    // Fail: Logout
-                    alert("Session Expired. Logging out.");
-                    doLogout();
+                    buttonHtml = `<a href="https://${exam.dummyLink}" target="_blank" class="exam-action-btn btn-locked">Unlock for ${exam.price}</a>`;
                 }
-            })
-            .catch(err => {
-                // Network error? Allow access if local check passed? 
-                // Better to be safe: Reset button and alert user.
-                alert("Network connection failed. Please try again.");
-                btnElement.innerText = originalText;
-                btnElement.disabled = false;
+
+                card.innerHTML = `
+                    <div>
+                        <h3>${exam.name}</h3>
+                        <p>Complete Mock Test Series. 80+ Tests included.</p>
+                    </div>
+                    ${buttonHtml}
+                `;
+                grid.appendChild(card);
             });
         }
 
-        // 4. UTILS
-        function doLogout() {
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('userAccess');
-            if(sessionTimer) clearInterval(sessionTimer);
+        // --- AUTH UI FUNCTIONS ---
+
+        function openAuth() { document.getElementById('authModal').style.display = 'flex'; }
+        function closeAuth() { document.getElementById('authModal').style.display = 'none'; }
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            // Reset views
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('forgotForm').style.display = 'none';
+            document.getElementById('resetForm').style.display = 'none';
+            document.getElementById('tabHeaders').style.display = 'flex';
+
+            if(tab === 'login') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('loginForm').style.display = 'block';
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('signupForm').style.display = 'block';
+            }
+        }
+
+        function showForgot() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('tabHeaders').style.display = 'none'; // Hide tabs
+            document.getElementById('forgotForm').style.display = 'block';
+        }
+
+        function showReset() {
+            document.getElementById('forgotForm').style.display = 'none';
+            document.getElementById('resetForm').style.display = 'block';
+        }
+
+        function togglePass(id) {
+            const input = document.getElementById(id);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function scrollToExams() {
+            document.getElementById('exams').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('currentUser');
             location.reload();
         }
 
-        function togglePass(inputId) {
-            const input = document.getElementById(inputId);
-            input.type = (input.type === "password") ? "text" : "password";
+        // --- BACKEND API CALLS ---
+
+        function showLoader(show) {
+            document.getElementById('authLoader').style.display = show ? 'block' : 'none';
         }
 
-        function getDeviceId() {
-            let id = localStorage.getItem('device_id');
-            if (!id) {
-                id = 'dev-' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
-                localStorage.setItem('device_id', id);
+        function showMsg(msg, color='red') {
+            const el = document.getElementById('authMessage');
+            el.innerText = msg;
+            el.style.color = color;
+        }
+
+        async function postData(action, data) {
+            showLoader(true);
+            showMsg('');
+            try {
+                const formData = new FormData();
+                formData.append('action', action);
+                formData.append('apiKey', API_KEY); // SECURE API KEY
+                
+                for (const key in data) {
+                    formData.append(key, data[key]);
+                }
+
+                const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+                return await response.json();
+            } catch (err) {
+                console.error(err);
+                return { success: false, message: 'Connection Error' };
+            } finally {
+                showLoader(false);
             }
-            return id;
         }
 
-        function switchView(viewId) {
-            document.querySelectorAll('.container > div').forEach(div => {
-                if (div.id !== 'main-header') div.classList.add('hidden');
+        async function handleLogin(e) {
+            e.preventDefault();
+            const res = await postData('login', {
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPass').value
             });
 
-            if (viewId === 'view-dashboard') {
-                document.getElementById('main-header').classList.add('hidden');
-                // START MONITORING WHEN DASHBOARD OPENS
-                startSessionMonitor();
+            if (res.success) {
+                localStorage.setItem('currentUser', JSON.stringify(res.user));
+                showMsg('Login Successful!', 'green');
+                setTimeout(() => { closeAuth(); init(); }, 1000);
             } else {
-                document.getElementById('main-header').classList.remove('hidden');
-                // STOP MONITORING IF NOT ON DASHBOARD
-                if(sessionTimer) clearInterval(sessionTimer);
+                showMsg(res.message);
             }
-            document.getElementById(viewId).classList.remove('hidden');
         }
 
-        // --- AUTH API CALLS ---
-        function doLogin() {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
-            const btn = document.getElementById('btnLogin');
-            const msg = document.getElementById('msg-login');
-
-            if(!email || !pass) { msg.innerText = "Please fill all fields"; return; }
-
-            btn.disabled = true; btn.innerText = "Verifying...";
-            msg.innerText = "";
-
-            fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'login', email: email, password: pass, deviceId: getDeviceId() })
-            })
-            .then(res => res.json())
-            .then(data => {
-                btn.disabled = false; btn.innerText = "Login";
-                if(data.result === 'success') {
-                    localStorage.setItem('userEmail', email);
-                    localStorage.setItem('userAccess', JSON.stringify(data.accessRights));
-                    userAccess = data.accessRights;
-                    switchView('view-dashboard');
-                } else {
-                    msg.innerText = data.message;
-                }
-            })
-            .catch(err => {
-                btn.disabled = false;
-                msg.innerText = "Connection Error.";
+        async function handleSignup(e) {
+            e.preventDefault();
+            const res = await postData('signup', {
+                name: document.getElementById('regName').value,
+                email: document.getElementById('regEmail').value,
+                phone: document.getElementById('regPhone').value,
+                password: document.getElementById('regPass').value,
+                deviceId: navigator.userAgent // Simple device tracking
             });
+
+            if (res.success) {
+                localStorage.setItem('currentUser', JSON.stringify(res.user));
+                showMsg('Account Created!', 'green');
+                setTimeout(() => { closeAuth(); init(); }, 1000);
+            } else {
+                showMsg(res.message);
+            }
         }
 
-        function doSignup() {
-            const name = document.getElementById('sign-name').value;
-            const email = document.getElementById('sign-email').value;
-            const phone = document.getElementById('sign-phone').value;
-            const pass = document.getElementById('sign-pass').value;
-            const device = document.getElementById('sign-device').value;
-            const btn = document.getElementById('btnSignup');
-            const msg = document.getElementById('msg-signup');
+        // 1. Send Forgot Password Code
+        async function handleForgot(e) {
+            e.preventDefault();
+            const email = document.getElementById('forgotEmail').value;
+            const res = await postData('forgot_password', { email: email });
 
-            if(!name || !email || !pass) { msg.innerText = "Fill required fields"; msg.className="error"; return; }
-            btn.disabled = true; btn.innerText = "Creating Account...";
-            
-            fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'signup', name, email, phone, password: pass, deviceId: device })
-            })
-            .then(res => res.json())
-            .then(data => {
-                btn.disabled = false; btn.innerText = "Sign Up Now";
-                if(data.result === 'success') {
-                    alert("Account Created! Please Login.");
-                    switchView('view-login');
-                } else {
-                    msg.innerText = data.message; msg.className = "error";
-                }
+            if (res.success) {
+                // Store email temporarily for next step
+                localStorage.setItem('resetEmail', email);
+                showMsg('Code sent! Check Email.', 'green');
+                setTimeout(() => { showReset(); }, 1500);
+            } else {
+                showMsg(res.message);
+            }
+        }
+
+        // 2. Verify Code & Update Password
+        async function handleReset(e) {
+            e.preventDefault();
+            const res = await postData('reset_password', {
+                email: localStorage.getItem('resetEmail'),
+                code: document.getElementById('resetCode').value,
+                newPassword: document.getElementById('newPass').value
             });
+
+            if (res.success) {
+                showMsg('Password Updated! Please Login.', 'green');
+                setTimeout(() => { switchTab('login'); }, 2000);
+            } else {
+                showMsg(res.message);
+            }
         }
 
-        function requestResetCode() {
-            const email = document.getElementById('reset-email').value;
-            const btn = document.getElementById('btnForgot');
-            const msg = document.getElementById('msg-forgot');
-            if(!email) { msg.innerText = "Enter email"; return; }
-            btn.disabled = true; btn.innerText = "Sending...";
+        // Initialize App
+        window.onload = init;
 
-            fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'reset_request', email })
-            })
-            .then(res => res.json())
-            .then(data => {
-                btn.disabled = false; btn.innerText = "Send Code";
-                if(data.result === 'success') {
-                    localStorage.setItem('resetEmail', email);
-                    switchView('view-confirm');
-                } else {
-                    msg.innerText = data.message; msg.className = "error";
-                }
-            });
-        }
-
-        function confirmReset() {
-            const email = localStorage.getItem('resetEmail');
-            const code = document.getElementById('confirm-code').value;
-            const newPass = document.getElementById('confirm-pass').value;
-            const btn = document.getElementById('btnConfirm');
-            const msg = document.getElementById('msg-confirm');
-            if(!code || !newPass) { msg.innerText = "Fill all fields"; return; }
-            btn.disabled = true; btn.innerText = "Updating...";
-
-            fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'reset_confirm', email, code, newPassword: newPass })
-            })
-            .then(res => res.json())
-            .then(data => {
-                btn.disabled = false; btn.innerText = "Update Password";
-                if(data.result === 'success') {
-                    alert("Password updated! Please login.");
-                    switchView('view-login');
-                } else {
-                    msg.innerText = data.message; msg.className = "error";
-                }
-            });
-        }
     </script>
 </body>
 </html>
