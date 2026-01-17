@@ -3,15 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Revision Test | Ultramodern Learning</title>
     
+    <title>Revision Test | Cut Corners, Pass Faster.</title>
+    <meta name="description" content="Stop wasting time on 100-hour lectures. Access 800+ high-quality mock tests for NEET, JEE, UPSC, SSC, and Banking. Do what the 99% are not doing.">
+    <meta name="keywords" content="NEET Mock Test, JEE Mains Practice, UPSC Prelims Test Series, SSC CGL Mock, Banking Exam Practice, NCLEX-RN Questions, IELTS Practice">
+    <meta name="author" content="Abinaya Samuel">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourusername.github.io/revision-test-app/">
+    <meta property="og:title" content="Revision Test | Don't Study Harder, Study Smarter.">
+    <meta property="og:description" content="80+ Tests per exam. Instant Access. No boring lectures.">
+    <meta property="og:image" content="ref.png">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Revision Test | Ultramodern Exam Prep">
+    <meta property="twitter:description" content="Cut corners, pass faster. The complete mock test solution.">
+    <meta property="twitter:image" content="ref.png">
+
     <meta name="theme-color" content="#ffffff">
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="ref.png">
     <link rel="apple-touch-icon" href="ref.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -27,7 +43,7 @@
             overflow-x: hidden;
         }
 
-        /* --- Background Pattern to reduce whitespace --- */
+        /* --- Background Pattern --- */
         .bg-dots {
             background-image: radial-gradient(#d1d5db 1px, transparent 1px);
             background-size: 20px 20px;
@@ -37,10 +53,10 @@
         .blob {
             position: absolute;
             border-radius: 50%;
-            filter: blur(40px);
+            filter: blur(50px);
             z-index: 0;
             animation: float 10s infinite ease-in-out;
-            opacity: 0.4;
+            opacity: 0.3;
         }
         .blob-orange { background: var(--brand-orange); }
         .blob-blue { background: var(--brand-blue); }
@@ -52,13 +68,13 @@
             100% { transform: translate(0, 0); }
         }
 
-        /* --- Animated Scrolling Divider (The "Funny" Part) --- */
+        /* --- Marquee --- */
         .marquee-container {
             overflow: hidden;
             white-space: nowrap;
             background: var(--brand-blue);
             padding: 15px 0;
-            transform: rotate(-1deg) scale(1.05); /* Slight tilt for style */
+            transform: rotate(-1deg) scale(1.05);
             border-top: 4px solid var(--brand-orange);
             border-bottom: 4px solid var(--brand-green);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
@@ -70,7 +86,7 @@
             display: inline-block;
             animation: marquee 20s linear infinite;
             color: white;
-            font-weight: 800;
+            font-weight: 900;
             font-size: 1.5rem;
             text-transform: uppercase;
         }
@@ -80,7 +96,7 @@
             100% { transform: translateX(-50%); }
         }
 
-        /* --- Dopamine Buttons --- */
+        /* --- Component Styles --- */
         .btn-brand {
             background: linear-gradient(90deg, var(--brand-blue), var(--brand-green));
             transition: all 0.2s ease;
@@ -100,13 +116,12 @@
             border-color: var(--brand-orange);
             transform: translateY(-5px);
         }
-
     </style>
 </head>
 <body class="bg-dots text-slate-900 antialiased">
 
     <div class="blob blob-orange w-64 h-64 top-0 left-0"></div>
-    <div class="blob blob-blue w-96 h-96 top-40 right-10 animation-delay-2000"></div>
+    <div class="blob blob-blue w-96 h-96 top-40 right-10"></div>
     <div class="blob blob-green w-72 h-72 bottom-20 left-20"></div>
 
     <nav class="fixed w-full z-50 top-0 bg-white/90 backdrop-blur-md border-b-4 border-orange-400">
@@ -150,13 +165,12 @@
             </h1>
             
             <p class="mt-6 text-2xl font-bold text-slate-700 max-w-3xl mx-auto leading-snug">
-                Stop wasting time on 100-hour lectures. <br>
-                <span class="text-blue-600 bg-blue-50 px-2 rounded">Pass faster.</span>
+                Cut corners, <span class="text-blue-600 bg-blue-50 px-2 rounded">pass faster.</span>
             </p>
             
-            <p class="mt-4 text-lg text-slate-500 max-w-2xl mx-auto font-medium">
-                Today you can learn better with AI tools such as <strong>ChatGPT & Gemini</strong>. 
-                Test your knowledge here and focus on what matters.
+            <p class="mt-4 text-xl text-slate-500 max-w-2xl mx-auto font-bold">
+                Do what the 99% are not doing. <br>
+                <span class="font-normal text-slate-400 text-lg">Test your knowledge here and focus on what matters.</span>
             </p>
 
             <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
@@ -170,8 +184,8 @@
     <div class="py-10">
         <div class="marquee-container">
             <div class="marquee-content">
-                PASS THE EXAM &nbsp; • &nbsp; NO MORE LECTURES &nbsp; • &nbsp; 800+ TESTS AVAILABLE &nbsp; • &nbsp; SAVE MONEY &nbsp; • &nbsp; PRACTICE NOW &nbsp; • &nbsp; 
-                PASS THE EXAM &nbsp; • &nbsp; NO MORE LECTURES &nbsp; • &nbsp; 800+ TESTS AVAILABLE &nbsp; • &nbsp; SAVE MONEY &nbsp; • &nbsp; PRACTICE NOW &nbsp; • &nbsp;
+                PASS THE EXAM &nbsp; • &nbsp; NO MORE LECTURES &nbsp; • &nbsp; 800+ TESTS AVAILABLE &nbsp; • &nbsp; CUT CORNERS &nbsp; • &nbsp; PRACTICE NOW &nbsp; • &nbsp; 
+                PASS THE EXAM &nbsp; • &nbsp; NO MORE LECTURES &nbsp; • &nbsp; 800+ TESTS AVAILABLE &nbsp; • &nbsp; CUT CORNERS &nbsp; • &nbsp; PRACTICE NOW &nbsp; • &nbsp;
             </div>
         </div>
     </div>
@@ -265,7 +279,7 @@
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxF8qO1a2BzRHZ6DDfZmHecCQZQWr_-Hvs5ddIEumwvVGAL8HDf81JIbUXiM9c8nFzb/exec'; 
         const API_KEY = 'ldbvay88end89u3lrcx38yy83b@43smsvfiop'; 
 
-        // Exam Data (Updated with Random Test Counts between 80-100)
+        // Exam Data
         const exams = [
             { id: 'NEET', name: 'NEET', html: 'NEET.html', price: '₹1499', dummyLink: 'www.razorapy.com_neet', count: 94 },
             { id: 'JEE', name: 'JEE Mains & Adv', html: 'JEE.html', price: '₹1499', dummyLink: 'www.razorapy.com_jee', count: 88 },
@@ -353,7 +367,6 @@
         
         function switchTab(tab) {
             const btns = document.querySelectorAll('.tab-btn');
-            // Toggle classes for active/inactive tabs
             if(tab === 'login') {
                 btns[0].className = 'flex-1 py-3 text-sm font-black rounded-lg transition-all tab-btn bg-white text-blue-600 shadow-sm';
                 btns[1].className = 'flex-1 py-3 text-sm font-bold text-slate-500 hover:text-blue-600 transition-all tab-btn';
@@ -494,9 +507,7 @@
             }
         }
 
-        // Init
         window.onload = init;
-
     </script>
 </body>
 </html>
