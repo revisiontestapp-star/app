@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NCLEX-RN Adaptive Exam Simulator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6A0DAD',
+            secondary: '#FFD700',
+            light: '#F9FAFB',
+            dark: '#1F2937'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #f0f4ff 0%, #fdf6f0 100%);
+    }
+    .fade-in {
+      animation: fadeIn 0.4s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .progress-bar {
+      height: 12px;
+      border-radius: 6px;
+      background: linear-gradient(to right, #6A0DAD, #FFD700);
+    }
+    .btn-end {
+      background: linear-gradient(135deg, #6A0DAD, #4B0082);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start p-4 pt-8">
+  <div id="app" class="w-full max-w-3xl bg-white rounded-2xl shadow-xl overflow-hidden">
+    <!-- Header -->
+    <div class="bg-primary text-white p-5 flex justify-between items-center">
+      <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+        <i class="fas fa-user-nurse"></i> NCLEX-RN Adaptive Exam
+      </h1>
+      <div class="flex items-center gap-4">
+        <div id="timer" class="text-xl font-mono font-bold">300:00</div>
+        <button id="endExamBtn" class="btn-end text-white px-3 py-1 rounded-lg text-sm hover:opacity-90 transition-opacity">
+          End Exam
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="p-4 bg-gray-50">
+      <div class="flex justify-between text-sm mb-1">
+        <span class="font-medium text-gray-700">Progress</span>
+        <span id="progress-text" class="font-medium text-gray-700">0/150</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-3">
+        <div id="progress-bar" class="progress-bar w-0"></div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div id="content" class="p-6 min-h-[500px]"></div>
+
+    <!-- Footer -->
+    <div class="bg-gray-100 p-3 text-center text-xs text-gray-600">
+      This simulation uses real NCLEX adaptive logic. Passing requires demonstrating consistent competence.
+    </div>
+  </div>
+
+  <script>
+    // ======================
+    // FULL 150 QUESTIONS DB
+    // ======================
+    const questions = [
+      // Difficulty levels: 1=easy, 2=medium, 3=hard
+      { id: 1, difficulty: 2, question: "A client with heart failure is prescribed furosemide (Lasix). Which laboratory value should the nurse monitor most closely?", options: ["Sodium", "Calcium", "Potassium", "Magnesium"], correctAnswer: 2, rationale: "Furosemide is a loop diuretic that causes significant potassium loss, leading to hypokalemia, which can result in life-threatening dysrhythmias." },
+      { id: 2, difficulty: 2, question: "Which assessment finding is most concerning in a client with suspected pulmonary embolism?", options: ["Tachycardia", "Hypertension", "Bradypnea", "Hyperthermia"], correctAnswer: 0, rationale: "Tachycardia is a compensatory response to hypoxemia caused by impaired gas exchange in pulmonary embolism. It often precedes hemodynamic collapse." },
+      { id: 3, difficulty: 1, question: "A client with type 1 diabetes reports shakiness, sweating, and confusion. What is the priority action?", options: ["Administer insulin", "Check blood glucose", "Give orange juice", "Call the provider"], correctAnswer: 1, rationale: "Assessment comes before intervention. Confirming hypoglycemia via blood glucose is essential before treatment to avoid worsening the condition." },
+      { id: 4, difficulty: 1, question: "Which dietary instruction is appropriate for a client with hypertension?", options: ["Increase canned vegetable intake", "Use salt substitutes freely", "Limit sodium to <2,300 mg/day", "Avoid all dairy products"], correctAnswer: 2, rationale: "The DASH diet recommends limiting sodium to less than 2,300 mg per day. Salt substitutes may contain potassium, which is unsafe in renal impairment." },
+      { id: 5, difficulty: 2, question: "Wernicke-Korsakoff syndrome in a client with chronic alcohol use is primarily due to deficiency of which vitamin?", options: ["Vitamin B12", "Vitamin C", "Thiamine (B1)", "Vitamin D"], correctAnswer: 2, rationale: "Chronic alcohol use impairs thiamine absorption and storage. Thiamine deficiency causes Wernicke’s encephalopathy (acute) and Korsakoff psychosis (chronic)." },
+      { id: 6, difficulty: 3, question: "A client on heparin therapy has a platelet count of 85,000/mm³. What complication should the nurse suspect?", options: ["Disseminated intravascular coagulation", "Heparin-induced thrombocytopenia (HIT)", "Thrombotic thrombocytopenic purpura", "Idiopathic thrombocytopenic purpura"], correctAnswer: 1, rationale: "HIT is an immune-mediated reaction to heparin causing platelet activation and consumption. A drop in platelets by >50% from baseline is diagnostic." },
+      { id: 7, difficulty: 2, question: "Which electrolyte imbalance is most associated with acute pancreatitis?", options: ["Hypercalcemia", "Hypokalemia", "Hypocalcemia", "Hypermagnesemia"], correctAnswer: 2, rationale: "Fat necrosis in acute pancreatitis binds calcium, forming calcium soaps, leading to hypocalcemia. This can cause tetany or seizures." },
+      { id: 8, difficulty: 3, question: "Which sign is part of Cushing’s triad in increased intracranial pressure?", options: ["Tachycardia", "Hypotension", "Bradycardia", "Tachypnea"], correctAnswer: 2, rationale: "Cushing’s triad includes hypertension, bradycardia, and irregular respirations. It indicates brainstem herniation and is a medical emergency." },
+      { id: 9, difficulty: 2, question: "Addisonian crisis is characterized by which set of findings?", options: ["Hyperglycemia, hypertension, hyperkalemia", "Hypoglycemia, hypotension, hyperkalemia", "Hyperglycemia, hypotension, hypokalemia", "Hypoglycemia, hypertension, hypokalemia"], correctAnswer: 1, rationale: "Addisonian crisis results from acute adrenal insufficiency: hypotension (from lack of aldosterone), hypoglycemia (lack of cortisol), and hyperkalemia." },
+      { id: 10, difficulty: 1, question: "What is the first-line treatment for anaphylaxis?", options: ["Diphenhydramine", "Epinephrine", "Albuterol", "Methylprednisolone"], correctAnswer: 1, rationale: "Epinephrine reverses bronchospasm, vasodilation, and capillary leak via alpha- and beta-adrenergic effects. Delay increases mortality risk." },
+      { id: 11, difficulty: 3, question: "A client with a chest tube develops sudden dyspnea and tracheal deviation. What is the priority action?", options: ["Clamp the chest tube", "Increase wall suction", "Prepare for needle decompression", "Auscultate breath sounds"], correctAnswer: 2, rationale: "Tracheal deviation suggests tension pneumothorax—a life-threatening emergency requiring immediate needle decompression at the 2nd intercostal space, midclavicular line." },
+      { id: 12, difficulty: 2, question: "Which finding requires immediate intervention in a client with a leg cast?", options: ["Pain at fracture site", "Cool, pale toes", "Mild swelling", "Itching under cast"], correctAnswer: 1, rationale: "Cool, pale toes indicate compromised arterial perfusion, possibly from compartment syndrome or vascular compression. Requires cast bivalving or removal." },
+      { id: 13, difficulty: 2, question: "A client with Parkinson’s disease takes levodopa/carbidopa. Which instruction is essential?", options: ["Take with high-protein meals", "Avoid vitamin B6 supplements", "Expect symptom relief within 1 hour", "Stop if nausea occurs"], correctAnswer: 1, rationale: "Vitamin B6 enhances peripheral metabolism of levodopa, reducing CNS availability. Carbidopa prevents this, but high-dose B6 can overwhelm it." },
+      { id: 14, difficulty: 1, question: "Which sign best indicates fluid volume deficit?", options: ["Bounding pulses", "Jugular venous distention", "Poor skin turgor", "Crackles in lungs"], correctAnswer: 2, rationale: "Poor skin turgor (tenting) reflects dehydration. Other signs include dry mucous membranes, tachycardia, and decreased urine output." },
+      { id: 15, difficulty: 3, question: "A client with a T4 spinal cord injury develops severe headache and hypertension. What complication is suspected?", options: ["Neurogenic shock", "Autonomic dysreflexia", "Spinal shock", "Malignant hypertension"], correctAnswer: 1, rationale: "Autonomic dysreflexia occurs in injuries above T6. Noxious stimuli (e.g., full bladder) trigger unopposed sympathetic response—hypertension, bradycardia, headache." },
+      { id: 16, difficulty: 1, question: "Which statement by a client with GERD indicates understanding?", options: ["I’ll lie down after meals", "I’ll eat large meals less often", "I’ll avoid chocolate and caffeine", "I’ll have wine with dinner"], correctAnswer: 2, rationale: "Chocolate and caffeine relax the lower esophageal sphincter, worsening reflux. Clients should also avoid alcohol, fatty foods, and reclining after eating." },
+      { id: 17, difficulty: 2, question: "What is the priority treatment for hepatic encephalopathy?", options: ["Lactulose", "Omeprazole", "Metoclopramide", "Docusate"], correctAnswer: 0, rationale: "Lactulose acidifies the colon, trapping ammonia as ammonium ions, which are excreted in stool. This reduces serum ammonia levels." },
+      { id: 18, difficulty: 2, question: "Which stoma appearance requires urgent notification of the surgeon?", options: ["Red and moist", "Slightly swollen", "Dark purple", "Pink with minimal output"], correctAnswer: 2, rationale: "A dark purple or black stoma indicates ischemia or necrosis due to compromised blood supply—a surgical emergency." },
+      { id: 19, difficulty: 2, question: "A client on haloperidol develops restlessness and inability to sit still. What is this side effect?", options: ["Dystonia", "Akathisia", "Tardive dyskinesia", "Neuroleptic malignant syndrome"], correctAnswer: 1, rationale: "Akathisia is a subjective sense of restlessness and objective motor agitation. It’s a common extrapyramidal side effect of typical antipsychotics." },
+      { id: 20, difficulty: 2, question: "Which finding is classic for small bowel obstruction?", options: ["Distended abdomen with high-pitched bowel sounds", "Rebound tenderness", "Hematemesis", "Steatorrhea"], correctAnswer: 0, rationale: "Early obstruction causes hyperactive, high-pitched (tinkling) bowel sounds. Late obstruction leads to absent sounds due to paralytic ileus." },
+      { id: 21, difficulty: 1, question: "A newborn has Apgar scores of 7 at 1 minute and 9 at 5 minutes. What does this indicate?", options: ["Severe distress", "Moderate distress", "Mild transitional difficulties", "Normal transition"], correctAnswer: 2, rationale: "Apgar 7–10 is generally reassuring. Scores of 7 at 1 min suggest mild transitional issues (e.g., acrocyanosis), resolving by 5 min." },
+      { id: 22, difficulty: 1, question: "Which vaccine is contraindicated in pregnancy?", options: ["Influenza", "Tdap", "MMR", "Hepatitis B"], correctAnswer: 2, rationale: "MMR is a live virus vaccine and is contraindicated in pregnancy due to theoretical fetal risk. Inactivated vaccines (flu, Tdap, HepB) are safe." },
+      { id: 23, difficulty: 2, question: "A postpartum client has a boggy uterus and heavy lochia. What is the priority action?", options: ["Administer oxytocin", "Massage the fundus", "Increase IV fluids", "Assess vital signs"], correctAnswer: 1, rationale: "Uterine atony is the leading cause of postpartum hemorrhage. Fundal massage stimulates contraction and should be done immediately." },
+      { id: 24, difficulty: 2, question: "Which finding in a child with croup requires immediate intervention?", options: ["Barking cough", "Stridor at rest", "Low-grade fever", "Hoarseness"], correctAnswer: 1, rationale: "Stridor at rest indicates significant airway obstruction. Stridor only with agitation is less urgent. Resting stridor may require nebulized epinephrine or intubation." },
+      { id: 25, difficulty: 2, question: "A client with schizophrenia says, 'The FBI is watching me through my TV.' This is an example of:", options: ["Delusion of reference", "Delusion of persecution", "Hallucination", "Magical thinking"], correctAnswer: 1, rationale: "Delusions of persecution involve beliefs of being targeted, harassed, or conspired against. This is common in paranoid schizophrenia." },
+      { id: 26, difficulty: 2, question: "Which lab value is critical to monitor in a client taking lithium?", options: ["Sodium", "Potassium", "Calcium", "Magnesium"], correctAnswer: 0, rationale: "Hyponatremia increases lithium reabsorption in the kidneys, raising serum levels and risk of toxicity. Normal sodium helps maintain therapeutic levels." },
+      { id: 27, difficulty: 3, question: "A client with diabetic ketoacidosis (DKA) has a serum potassium of 5.8 mEq/L. Why is potassium replacement still needed?", options: ["Insulin drives potassium into cells, causing hypokalemia", "The elevated level is falsely high due to acidosis", "Potassium is lost in osmotic diuresis", "Both A and C"], correctAnswer: 3, rationale: "Total body potassium is depleted in DKA due to osmotic diuresis. Insulin therapy shifts K+ intracellularly, rapidly causing hypokalemia despite normal/high initial levels." },
+      { id: 28, difficulty: 2, question: "Which sign indicates effective treatment of hypovolemic shock?", options: ["Urine output >30 mL/hr", "Heart rate 110 bpm", "Blood pressure 90/60 mmHg", "Capillary refill 4 seconds"], correctAnswer: 0, rationale: "Urine output >30 mL/hr reflects adequate renal perfusion and is a sensitive indicator of restored circulating volume in shock." },
+      { id: 29, difficulty: 2, question: "A client with myasthenia gravis is prescribed pyridostigmine. Which outcome indicates effectiveness?", options: ["Improved grip strength", "Decreased salivation", "Reduced tremors", "Lowered blood pressure"], correctAnswer: 0, rationale: "Pyridostigmine is an acetylcholinesterase inhibitor that increases acetylcholine at neuromuscular junctions, improving muscle strength in myasthenia gravis." },
+      { id: 30, difficulty: 2, question: "Which action is priority when administering packed red blood cells?", options: ["Use a Y-tubing with normal saline", "Infuse over 4 hours", "Administer with dextrose solution", "Use a micron filter"], correctAnswer: 0, rationale: "PRBCs must be administered with normal saline only (no dextrose or other additives). A Y-set allows rapid saline infusion if a reaction occurs." },
+      { id: 31, difficulty: 2, question: "A client with COPD has ABGs: pH 7.32, PaCO2 58 mmHg, HCO3 28 mEq/L. What acid-base imbalance is present?", options: ["Respiratory acidosis, compensated", "Respiratory acidosis, uncompensated", "Metabolic alkalosis", "Respiratory alkalosis"], correctAnswer: 0, rationale: "Elevated PaCO2 with low pH indicates respiratory acidosis. The elevated HCO3 shows renal compensation (chronic COPD)." },
+      { id: 32, difficulty: 2, question: "Which food should be avoided by a client on phenelzine (MAOI)?", options: ["Bananas", "Yogurt", "Aged cheese", "Apples"], correctAnswer: 2, rationale: "Aged cheeses contain tyramine, which can cause hypertensive crisis when combined with MAOIs due to unopposed catecholamine release." },
+      { id: 33, difficulty: 3, question: "A client with burns over 40% of the body is in the emergent phase. What is the priority nursing diagnosis?", options: ["Impaired skin integrity", "Fluid volume deficit", "Risk for infection", "Acute pain"], correctAnswer: 1, rationale: "In the first 24–48 hours (emergent phase), massive fluid shifts cause hypovolemic shock. Fluid resuscitation is the top priority." },
+      { id: 34, difficulty: 2, question: "Which finding in a client with a head injury requires immediate reporting?", options: ["Headache", "Nausea", "Clear drainage from nose", "Drowsiness"], correctAnswer: 2, rationale: "Clear nasal drainage may be cerebrospinal fluid (CSF), indicating a skull fracture and risk for meningitis. Test with glucose stick or halo sign." },
+      { id: 35, difficulty: 2, question: "A client with hyperthyroidism is prescribed propylthiouracil (PTU). Which lab value is most important to monitor?", options: ["TSH", "Free T4", "CBC with differential", "Calcium"], correctAnswer: 2, rationale: "PTU can cause agranulocytosis (life-threatening drop in WBCs). Monitor CBC weekly for the first 3 months." },
+      { id: 36, difficulty: 1, question: "Which sign is earliest indicator of increased intracranial pressure in infants?", options: ["Bulging fontanelle", "High-pitched cry", "Setting-sun eyes", "Vomiting"], correctAnswer: 0, rationale: "In infants with open fontanelles, a bulging anterior fontanelle is an early sign of increased ICP before other symptoms appear." },
+      { id: 37, difficulty: 2, question: "A client with SIADH has a serum sodium of 122 mEq/L. What is the priority intervention?", options: ["Administer 3% saline", "Restrict fluids to 800 mL/day", "Give furosemide", "Encourage oral fluids"], correctAnswer: 1, rationale: "SIADH causes water retention and hyponatremia. Fluid restriction is first-line to correct dilutional hyponatremia." },
+      { id: 38, difficulty: 1, question: "Which medication is used to reverse opioid overdose?", options: ["Flumazenil", "Naloxone", "Atropine", "Physostigmine"], correctAnswer: 1, rationale: "Naloxone is an opioid antagonist that rapidly reverses respiratory depression and sedation in opioid overdose." },
+      { id: 39, difficulty: 2, question: "A client with rheumatoid arthritis takes methotrexate. Which instruction is essential?", options: ["Take on an empty stomach", "Avoid sun exposure", "Take folic acid daily", "Double dose if a dose is missed"], correctAnswer: 2, rationale: "Folic acid supplementation reduces methotrexate side effects (e.g., stomatitis, hepatotoxicity) without reducing efficacy." },
+      { id: 40, difficulty: 1, question: "Which finding indicates successful phototherapy in a newborn with jaundice?", options: ["Decreased bilirubin levels", "Increased feeding", "Yellow skin fading", "Stool turning green"], correctAnswer: 0, rationale: "Serum bilirubin levels are the objective measure of phototherapy effectiveness. Skin color is subjective and unreliable." },
+      { id: 41, difficulty: 3, question: "A client with preeclampsia has a magnesium sulfate infusion. Which finding indicates toxicity?", options: ["Patellar reflex 2+", "Urinary output 30 mL/hr", "Respirations 10/min", "BP 140/90 mmHg"], correctAnswer: 2, rationale: "Respiratory depression (<12 breaths/min) is a sign of magnesium toxicity. Loss of deep tendon reflexes is an earlier sign." },
+      { id: 42, difficulty: 3, question: "Which action is priority for a client with suspected testicular torsion?", options: ["Apply ice pack", "Administer analgesics", "Prepare for surgery", "Perform manual detorsion"], correctAnswer: 2, rationale: "Testicular torsion is a surgical emergency. Salvage rate drops significantly after 6 hours. Do not delay for imaging if clinical suspicion is high." },
+      { id: 43, difficulty: 3, question: "A client with schizophrenia is started on clozapine. Which lab test is required weekly?", options: ["Liver function tests", "Thyroid panel", "Absolute neutrophil count (ANC)", "Serum creatinine"], correctAnswer: 2, rationale: "Clozapine can cause agranulocytosis. ANC must be monitored weekly for the first 6 months, then every 2 weeks." },
+      { id: 44, difficulty: 2, question: "Which sign is characteristic of left-sided heart failure?", options: ["Peripheral edema", "Jugular venous distention", "Crackles in lung bases", "Hepatomegaly"], correctAnswer: 2, rationale: "Left-sided failure causes pulmonary congestion (crackles, dyspnea, orthopnea). Right-sided failure causes systemic congestion (edema, JVD, hepatomegaly)." },
+      { id: 45, difficulty: 2, question: "A client with Addison’s disease is stressed due to surgery. What adjustment is needed?", options: ["Hold steroid dose", "Decrease steroid dose", "Increase steroid dose", "Switch to oral steroids"], correctAnswer: 2, rationale: "Stress (surgery, infection) increases cortisol demand. Clients with adrenal insufficiency require stress-dose hydrocortisone to prevent crisis." },
+      { id: 46, difficulty: 2, question: "Which finding in a client with cirrhosis indicates need for lactulose?", options: ["Ascites", "Variceal bleeding", "Confusion", "Pruritus"], correctAnswer: 2, rationale: "Confusion suggests hepatic encephalopathy. Lactulose reduces ammonia absorption by acidifying the colon and promoting excretion." },
+      { id: 47, difficulty: 2, question: "A client with gout is prescribed allopurinol. When should it be started?", options: ["During acute attack", "After acute attack resolves", "Only if uric acid >10 mg/dL", "With colchicine during attack"], correctAnswer: 1, rationale: "Allopurinol should not be initiated during an acute gout attack as it can prolong or worsen symptoms. Start after inflammation subsides." },
+      { id: 48, difficulty: 1, question: "Which action is priority when a client has a seizure?", options: ["Restrain limbs", "Insert oral airway", "Turn to side", "Administer lorazepam"], correctAnswer: 2, rationale: "Positioning on the side maintains airway and prevents aspiration. Do not restrain or insert anything into the mouth." },
+      { id: 49, difficulty: 2, question: "A client with HIV has a CD4 count of 180 cells/mm³. Which prophylaxis is indicated?", options: ["Azithromycin for MAC", "Fluconazole for candidiasis", "Trimethoprim-sulfamethoxazole for PCP", "Acyclovir for HSV"], correctAnswer: 2, rationale: "PCP prophylaxis (with TMP-SMX) is recommended when CD4 <200 cells/mm³. MAC prophylaxis starts at CD4 <50." },
+      { id: 50, difficulty: 3, question: "Which finding indicates effective treatment of diabetic ketoacidosis?", options: ["Blood glucose 250 mg/dL", "Serum bicarbonate 18 mEq/L", "Anion gap closed", "Potassium 4.0 mEq/L"], correctAnswer: 2, rationale: "Closure of the anion gap (normal: 8–12) indicates resolution of ketoacidosis, even if blood glucose remains elevated." },
+      { id: 51, difficulty: 1, question: "A client with pernicious anemia requires which supplement?", options: ["Oral iron", "Vitamin B12 injections", "Folic acid", "Vitamin K"], correctAnswer: 1, rationale: "Pernicious anemia is caused by lack of intrinsic factor, preventing B12 absorption. Lifelong parenteral B12 is required." },
+      { id: 52, difficulty: 2, question: "Which sign is indicative of placental abruption?", options: ["Painless vaginal bleeding", "Rigid, board-like abdomen", "Late decelerations on fetal monitoring", "Both B and C"], correctAnswer: 3, rationale: "Placental abruption presents with painful, rigid uterus and fetal distress (late decelerations). Painless bleeding suggests placenta previa." },
+      { id: 53, difficulty: 1, question: "A client with tuberculosis is on rifampin. What teaching is essential?", options: ["Avoid sunlight", "Take with antacids", "Expect orange body fluids", "Double dose if missed"], correctAnswer: 2, rationale: "Rifampin turns urine, sweat, tears, and saliva orange-red. This is harmless but can stain contact lenses." },
+      { id: 54, difficulty: 3, question: "Which action is priority for a client with suspected compartment syndrome?", options: ["Elevate the extremity", "Apply ice", "Remove constrictive dressings", "Administer morphine"], correctAnswer: 2, rationale: "Compartment syndrome is a surgical emergency. Remove tight dressings/casts immediately to reduce pressure. Do not elevate (reduces perfusion)." },
+      { id: 55, difficulty: 2, question: "A client with bipolar disorder is in acute mania. Which intervention is priority?", options: ["Provide high-calorie snacks", "Encourage group activities", "Ensure safety", "Discuss delusional thoughts"], correctAnswer: 2, rationale: "Safety is paramount in mania due to risk of injury from hyperactivity, poor judgment, or aggression." },
+      { id: 56, difficulty: 2, question: "Which finding indicates digoxin toxicity?", options: ["Visual disturbances", "Hypokalemia", "Bradycardia", "All of the above"], correctAnswer: 3, rationale: "Digoxin toxicity causes GI symptoms (nausea), visual changes (yellow halos), and cardiac effects (bradycardia, arrhythmias). Hypokalemia increases risk." },
+      { id: 57, difficulty: 1, question: "A client with asthma uses albuterol MDI. When should a spacer be used?", options: ["Only for children", "With every use", "Only during acute attacks", "If coordination is poor"], correctAnswer: 1, rationale: "Spacers improve drug delivery to the lungs and reduce oropharyngeal deposition (which causes thrush). Recommended for all MDI users." },
+      { id: 58, difficulty: 2, question: "Which sign indicates hypocalcemia?", options: ["Chvostek’s sign", "Trousseau’s sign", "Both A and B", "Hyperreflexia"], correctAnswer: 2, rationale: "Chvostek’s (facial twitch with tapping facial nerve) and Trousseau’s (carpopedal spasm with BP cuff inflation) are classic signs of hypocalcemia." },
+      { id: 59, difficulty: 3, question: "A client with end-stage renal disease misses a dialysis session. Which finding is most urgent?", options: ["Weight gain 2 kg", "K+ 6.0 mEq/L", "BUN 80 mg/dL", "Creatinine 10 mg/dL"], correctAnswer: 1, rationale: "Hyperkalemia (K+ >5.5) can cause fatal dysrhythmias. Dialysis is urgently needed to correct it." },
+      { id: 60, difficulty: 1, question: "Which vaccine is given at birth?", options: ["Hepatitis B", "Rotavirus", "DTaP", "Hib"], correctAnswer: 0, rationale: "Hepatitis B vaccine is given within 24 hours of birth. Rotavirus, DTaP, and Hib start at 2 months." },
+      { id: 61, difficulty: 2, question: "A client with depression says, 'I don’t deserve to live.' What is the priority action?", options: ["Document the statement", "Ask about suicide plan", "Notify the provider", "Implement one-to-one observation"], correctAnswer: 1, rationale: "Assessing suicide risk (plan, intent, means) is critical before implementing safety measures. Direct questioning does not increase risk." },
+      { id: 62, difficulty: 1, question: "Which finding indicates effective warfarin therapy?", options: ["INR 2.5", "PT 15 seconds", "aPTT 45 seconds", "Platelets 250,000/mm³"], correctAnswer: 0, rationale: "Warfarin is monitored by INR. Therapeutic range for most conditions is 2.0–3.0. PT/aPTT are not used for warfarin monitoring." },
+      { id: 63, difficulty: 3, question: "A client with Guillain-Barré syndrome develops ascending paralysis. What is the priority assessment?", options: ["Sensation in feet", "Deep tendon reflexes", "Respiratory status", "Bowel sounds"], correctAnswer: 2, rationale: "Guillain-Barré can progress to respiratory failure due to diaphragmatic weakness. Monitor vital capacity and prepare for intubation." },
+      { id: 64, difficulty: 2, question: "Which instruction is appropriate for a client with dumping syndrome?", options: ["Drink fluids with meals", "Lie down after eating", "Eat high-carbohydrate meals", "Avoid simple sugars"], correctAnswer: 3, rationale: "Dumping syndrome is managed by avoiding simple carbs/sugars, eating protein/fat with meals, and drinking fluids between meals (not with)." },
+      { id: 65, difficulty: 2, question: "A client with Cushing’s syndrome has which physical finding?", options: ["Moon face", "Exophthalmos", "Tremors", "Goiter"], correctAnswer: 0, rationale: "Cushing’s syndrome (excess cortisol) causes moon face, buffalo hump, central obesity, and purple striae. Exophthalmos is seen in Graves’ disease." },
+      { id: 66, difficulty: 3, question: "Which action is priority when a chest tube is dislodged?", options: ["Clamp the tube", "Cover with sterile petrolatum gauze", "Reinsert the tube", "Increase suction"], correctAnswer: 1, rationale: "Immediately cover the site with sterile petrolatum gauze (occlusive dressing taped on 3 sides) to prevent tension pneumothorax. Notify provider." },
+      { id: 67, difficulty: 2, question: "A client with multiple sclerosis takes baclofen. What is the expected outcome?", options: ["Reduced fatigue", "Decreased spasticity", "Improved cognition", "Lessened tremors"], correctAnswer: 1, rationale: "Baclofen is a muscle relaxant used to reduce spasticity in MS. Fatigue is managed with amantadine; tremors with propranolol." },
+      { id: 68, difficulty: 2, question: "Which sign indicates hypovolemic shock in a trauma client?", options: ["Hypertension", "Bradycardia", "Warm, dry skin", "Tachycardia and cool, clammy skin"], correctAnswer: 3, rationale: "Hypovolemic shock causes tachycardia (compensation), hypotension, and cool/clammy skin (vasoconstriction). Hypertension/bradycardia occur in neurogenic shock." },
+      { id: 69, difficulty: 2, question: "A client with osteoporosis is prescribed alendronate. Which instruction is essential?", options: ["Take with food", "Lie down for 30 minutes after", "Take with 8 oz water and remain upright", "Take at bedtime"], correctAnswer: 2, rationale: "Alendronate must be taken with a full glass of water on an empty stomach, and the client must remain upright for 30 minutes to prevent esophageal erosion." },
+      { id: 70, difficulty: 1, question: "Which finding in a newborn requires immediate intervention?", options: ["Acrocyanosis", "Caput succedaneum", "Grunting respirations", "Mongolian spots"], correctAnswer: 2, rationale: "Grunting is a sign of respiratory distress in newborns, indicating increased work of breathing to maintain FRC. Requires oxygen assessment." },
+      { id: 71, difficulty: 3, question: "A client with ulcerative colitis has 10 bloody stools/day. What complication is most likely?", options: ["Toxic megacolon", "Perforation", "Dehydration", "All of the above"], correctAnswer: 3, rationale: "Frequent bloody stools cause fluid loss (dehydration), and inflammation can lead to toxic megacolon (dilated colon) or perforation." },
+      { id: 72, difficulty: 2, question: "Which medication is used to treat alcohol withdrawal?", options: ["Haloperidol", "Chlordiazepoxide", "Naltrexone", "Disulfiram"], correctAnswer: 1, rationale: "Benzodiazepines (e.g., chlordiazepoxide) are first-line for alcohol withdrawal to prevent seizures and delirium tremens." },
+      { id: 73, difficulty: 2, question: "A client with systemic lupus erythematosus (SLE) should avoid:", options: ["Sun exposure", "High-protein diet", "Exercise", "Vaccinations"], correctAnswer: 0, rationale: "UV light can trigger SLE flares. Clients should use sunscreen, wear hats, and avoid direct sun." },
+      { id: 74, difficulty: 2, question: "Which sign indicates effective treatment of hyperemesis gravidarum?", options: ["Reduced nausea", "Weight gain", "Urine output >30 mL/hr", "Absence of ketones in urine"], correctAnswer: 3, rationale: "Resolution of ketonuria indicates improved hydration and nutrition, which is the goal of IV fluid/electrolyte replacement." },
+      { id: 75, difficulty: 2, question: "A client with a fractured hip is at highest risk for:", options: ["Pneumonia", "Deep vein thrombosis", "Pressure ulcers", "Constipation"], correctAnswer: 1, rationale: "Immobility after hip fracture significantly increases DVT risk. Prophylaxis (heparin, compression devices) is standard." },
+      { id: 76, difficulty: 2, question: "Which finding indicates lithium toxicity?", options: ["Fine hand tremors", "Serum level 1.2 mEq/L", "Coarse tremors and confusion", "Polyuria"], correctAnswer: 2, rationale: "Lithium toxicity (>1.5 mEq/L) causes coarse tremors, confusion, ataxia, and seizures. Fine tremors are a common side effect at therapeutic levels." },
+      { id: 77, difficulty: 2, question: "A client with pancreatitis should avoid:", options: ["High-carbohydrate foods", "High-protein foods", "High-fat foods", "High-fiber foods"], correctAnswer: 2, rationale: "Fat stimulates pancreatic enzyme secretion, worsening inflammation. Low-fat diet is recommended during acute phase." },
+      { id: 78, difficulty: 3, question: "Which action is priority for a client with autonomic dysreflexia?", options: ["Elevate HOB", "Check for bladder distention", "Administer antihypertensive", "Apply oxygen"], correctAnswer: 1, rationale: "Autonomic dysreflexia is triggered by noxious stimuli below the injury (e.g., full bladder). Sitting upright lowers BP, and removing the trigger is key." },
+      { id: 79, difficulty: 2, question: "A client with HIV has oral candidiasis. What is the first-line treatment?", options: ["Fluconazole", "Nystatin swish and swallow", "Amphotericin B", "Clotrimazole troches"], correctAnswer: 1, rationale: "Nystatin is first-line for mild oral thrush. Fluconazole is used for moderate-severe or esophageal candidiasis." },
+      { id: 80, difficulty: 2, question: "Which sign indicates effective treatment of heart failure with ACE inhibitors?", options: ["Decreased BNP", "Increased ejection fraction", "Reduced edema", "All of the above"], correctAnswer: 3, rationale: "ACE inhibitors reduce afterload, improve EF, decrease BNP (marker of ventricular stretch), and reduce fluid retention." },
+      { id: 81, difficulty: 3, question: "A client with leukemia has neutropenia. Which intervention is priority?", options: ["Private room", "No fresh flowers", "Low-bacteria diet", "All of the above"], correctAnswer: 3, rationale: "Neutropenic precautions include private room, no live plants/flowers, and low-bacteria diet (no raw fruits/vegetables, undercooked meat) to prevent infection." },
+      { id: 82, difficulty: 3, question: "Which finding indicates magnesium sulfate toxicity in preeclampsia?", options: ["BP 150/100", "Urinary output 20 mL/hr", "Respirations 12/min", "Patellar reflex absent"], correctAnswer: 3, rationale: "Loss of deep tendon reflexes is the earliest sign of magnesium toxicity. Respiratory depression follows." },
+      { id: 83, difficulty: 2, question: "A client with Alzheimer’s disease wanders. What is the best intervention?", options: ["Restrain in chair", "Assign sitter", "Install door alarms", "Lock doors"], correctAnswer: 2, rationale: "Door alarms alert staff when the client attempts to wander, allowing redirection while maintaining autonomy. Restraints are last resort." },
+      { id: 84, difficulty: 3, question: "Which lab value is most critical in a client with acute kidney injury?", options: ["BUN", "Creatinine", "Potassium", "Sodium"], correctAnswer: 2, rationale: "Hyperkalemia is the most life-threatening electrolyte abnormality in AKI due to risk of cardiac arrest." },
+      { id: 85, difficulty: 2, question: "A client with schizophrenia hears voices telling him to harm himself. What is the priority nursing diagnosis?", options: ["Disturbed thought process", "Risk for self-directed violence", "Anxiety", "Social isolation"], correctAnswer: 1, rationale: "Command hallucinations increase suicide risk. Safety is the priority over managing the hallucination itself." },
+      { id: 86, difficulty: 2, question: "Which sign indicates effective treatment of hypothyroidism?", options: ["Weight loss", "Increased energy", "Normalized TSH", "All of the above"], correctAnswer: 3, rationale: "Levothyroxine therapy aims to normalize TSH. Symptom improvement (energy, weight) follows biochemical correction." },
+      { id: 87, difficulty: 2, question: "A client with diverticulitis should avoid:", options: ["High-fiber foods during acute phase", "Nuts and seeds", "Dairy products", "Red meat"], correctAnswer: 0, rationale: "During acute diverticulitis, a low-fiber or clear liquid diet reduces bowel stimulation. High-fiber diet is resumed during remission." },
+      { id: 88, difficulty: 2, question: "Which action is priority when a client has a positive TB skin test?", options: ["Start INH prophylaxis", "Order chest X-ray", "Place in airborne isolation", "Notify public health"], correctAnswer: 1, rationale: "A positive PPD requires chest X-ray to rule out active TB before starting prophylaxis. Isolation is only if active disease is suspected." },
+      { id: 89, difficulty: 2, question: "A client with sickle cell crisis has which priority intervention?", options: ["Administer oxygen", "Give IV fluids", "Provide analgesics", "All of the above"], correctAnswer: 3, rationale: "Hydration (IV fluids), oxygenation, and pain control are the pillars of sickle cell crisis management to prevent further sickling." },
+      { id: 90, difficulty: 2, question: "Which finding indicates effective treatment of status epilepticus?", options: ["Seizure cessation", "Return of consciousness", "Normal EEG", "Stable vital signs"], correctAnswer: 0, rationale: "Stopping the seizure is the immediate goal. Consciousness may take time to return due to postictal state or medications." },
+      { id: 91, difficulty: 2, question: "A client with Crohn’s disease has steatorrhea. What deficiency is likely?", options: ["Vitamin B12", "Iron", "Vitamin D", "Folic acid"], correctAnswer: 0, rationale: "Crohn’s affecting the terminal ileum impairs B12 absorption. Steatorrhea (fat malabsorption) also causes fat-soluble vitamin deficiencies (A, D, E, K)." },
+      { id: 92, difficulty: 3, question: "Which sign indicates compartment syndrome?", options: ["Pain out of proportion", "Pallor", "Paresthesia", "All of the above (6 P’s)"], correctAnswer: 3, rationale: "The 6 P’s: Pain (out of proportion), Paresthesia, Pallor, Paralysis, Pulselessness, Poikilothermia. Pain with passive stretch is earliest sign." },
+      { id: 93, difficulty: 3, question: "A client with myxedema coma requires which intervention first?", options: ["IV levothyroxine", "Warming blankets", "Glucose", "Hydrocortisone"], correctAnswer: 2, rationale: "Myxedema coma often presents with hypoglycemia. Give glucose first, then thyroid hormone and steroids (stress-dose). Avoid external warming (causes vasodilation/shock)." },
+      { id: 94, difficulty: 2, question: "Which medication is used to treat opioid-induced constipation?", options: ["Docusate", "Senna", "Methylnaltrexone", "Psyllium"], correctAnswer: 2, rationale: "Methylnaltrexone is a peripherally acting mu-opioid antagonist that blocks opioid effects in the gut without reversing analgesia." },
+      { id: 95, difficulty: 2, question: "A client with pheochromocytoma has which classic triad?", options: ["Hypertension, headache, diaphoresis", "Hypotension, flushing, diarrhea", "Weight loss, tremors, heat intolerance", "Moon face, buffalo hump, striae"], correctAnswer: 0, rationale: "Pheochromocytoma (adrenal medulla tumor) causes episodic catecholamine release: hypertension, headache, and diaphoresis." },
+      { id: 96, difficulty: 3, question: "Which action is priority for a client with suspected ectopic pregnancy?", options: ["Administer methotrexate", "Prepare for surgery", "Monitor serial hCG", "Provide emotional support"], correctAnswer: 1, rationale: "Ruptured ectopic pregnancy is a surgical emergency due to risk of hemorrhage. Unruptured may be managed medically, but surgery is definitive." },
+      { id: 97, difficulty: 2, question: "A client with Bell’s palsy should be taught to:", options: ["Massage the face", "Use an eye patch at night", "Avoid chewing on affected side", "All of the above"], correctAnswer: 3, rationale: "Bell’s palsy causes facial paralysis. Eye care (patch/lubricants) prevents corneal injury. Massage may reduce stiffness; soft diet avoids biting cheek." },
+      { id: 98, difficulty: 2, question: "Which finding indicates effective treatment of hyperkalemia?", options: ["K+ 5.0 mEq/L", "Normal ECG", "Resolution of muscle weakness", "All of the above"], correctAnswer: 3, rationale: "Treatment goals: normalize K+, resolve ECG changes (peaked T waves), and reverse symptoms (weakness, paralysis)." },
+      { id: 99, difficulty: 2, question: "A client with cystic fibrosis requires which supplement?", options: ["Vitamin C", "Vitamin D", "Pancreatic enzymes", "Iron"], correctAnswer: 2, rationale: "Pancreatic insufficiency in CF requires replacement enzymes with meals/snacks to aid digestion and prevent malnutrition." },
+      { id: 100, difficulty: 2, question: "Which sign indicates increased intracranial pressure in a child?", options: ["Sunken fontanelle", "High-pitched cry", "Increased head circumference", "Both B and C"], correctAnswer: 3, rationale: "In infants, increased ICP causes bulging fontanelle, high-pitched cry, and increasing head circumference. Sunken fontanelle suggests dehydration." },
+      { id: 101, difficulty: 3, question: "A client with HIV has a CD4 count of 40 cells/mm³. Which opportunistic infection is most likely?", options: ["Pneumocystis pneumonia", "Toxoplasmosis", "Cryptococcal meningitis", "All of the above"], correctAnswer: 3, rationale: "CD4 <100 increases risk for all these OIs. PCP is most common at CD4 <200; toxo and crypto at CD4 <100." },
+      { id: 102, difficulty: 2, question: "Which action is priority when a client has a transfusion reaction?", options: ["Notify provider", "Stop transfusion", "Maintain IV access", "Send blood bag to lab"], correctAnswer: 1, rationale: "First action: STOP the transfusion. Then maintain IV access with normal saline, notify provider, and send blood/products for testing." },
+      { id: 103, difficulty: 2, question: "A client with Addison’s disease is vomiting. What action is needed?", options: ["Hold steroid dose", "Give extra hydrocortisone", "Administer antiemetic", "Encourage fluids"], correctAnswer: 1, rationale: "Vomiting is a stressor requiring increased glucocorticoid coverage to prevent adrenal crisis. Give IM hydrocortisone if oral not retained." },
+      { id: 104, difficulty: 3, question: "Which finding indicates effective treatment of diabetic ketoacidosis?", options: ["Blood glucose <200 mg/dL", "Serum bicarbonate >18 mEq/L", "Anion gap <12", "All of the above"], correctAnswer: 3, rationale: "DKA resolution requires glucose <200, bicarbonate ≥18, and anion gap closed. Insulin is continued until anion gap closes." },
+      { id: 105, difficulty: 2, question: "A client with schizophrenia is prescribed risperidone. Which side effect should be monitored?", options: ["Agranulocytosis", "QT prolongation", "Hyperprolrolactinemia", "Photosensitivity"], correctAnswer: 2, rationale: "Risperidone (and other second-gen antipsychotics) can cause elevated prolactin, leading to galactorrhea, amenorrhea, or sexual dysfunction." },
+      { id: 106, difficulty: 2, question: "Which sign indicates hypovolemia in a burn client?", options: ["Hypertension", "Bradycardia", "Decreased urine output", "Bounding pulses"], correctAnswer: 2, rationale: "In burn shock, fluid loss causes hypovolemia: tachycardia, hypotension, and decreased urine output (<30 mL/hr)." },
+      { id: 107, difficulty: 2, question: "A client with hyperparathyroidism has which lab finding?", options: ["Hypocalcemia", "Hypercalcemia", "Hypophosphatemia", "Both B and C"], correctAnswer: 3, rationale: "Hyperparathyroidism increases bone resorption, causing hypercalcemia and hypophosphatemia (PTH decreases phosphate reabsorption)." },
+      { id: 108, difficulty: 3, question: "Which action is priority for a client with suspected meningitis?", options: ["Administer antibiotics", "Perform lumbar puncture", "Place in droplet precautions", "Give antipyretics"], correctAnswer: 2, rationale: "Antibiotics should be given ASAP, but blood cultures and LP should not be delayed. Droplet precautions are initiated immediately." },
+      { id: 109, difficulty: 2, question: "A client with Parkinson’s disease has pill-rolling tremor. Which medication is used?", options: ["Levodopa/carbidopa", "Haloperidol", "Phenytoin", "Lithium"], correctAnswer: 0, rationale: "Levodopa/carbidopa is the gold standard for Parkinson’s motor symptoms. Antipsychotics (haloperidol) worsen Parkinsonism." },
+      { id: 110, difficulty: 3, question: "Which finding indicates effective treatment of septic shock?", options: ["MAP >65 mmHg", "Lactate <2 mmol/L", "Urine output >0.5 mL/kg/hr", "All of the above"], correctAnswer: 3, rationale: "Septic shock resuscitation goals: MAP ≥65, lactate clearance, and adequate urine output. These indicate restored perfusion." },
+      { id: 111, difficulty: 3, question: "A client with leukemia has tumor lysis syndrome. Which lab value is critical?", options: ["Potassium", "Uric acid", "Phosphate", "All of the above"], correctAnswer: 3, rationale: "TLS causes hyperkalemia, hyperphosphatemia, hypocalcemia, and hyperuricemia due to rapid cell lysis. All can be life-threatening." },
+      { id: 112, difficulty: 2, question: "Which sign indicates placenta previa?", options: ["Painful vaginal bleeding", "Rigid abdomen", "Painless vaginal bleeding", "Late decelerations"], correctAnswer: 2, rationale: "Placenta previa presents with painless, bright red vaginal bleeding in the second/third trimester. Abruption causes painful bleeding." },
+      { id: 113, difficulty: 2, question: "A client with gout has uric acid 9 mg/dL. Which medication is used for prophylaxis?", options: ["Colchicine", "Allopurinol", "Indomethacin", "Prednisone"], correctAnswer: 1, rationale: "Allopurinol inhibits xanthine oxidase, reducing uric acid production. Used for long-term prophylaxis, not acute attacks." },
+      { id: 114, difficulty: 2, question: "Which action is priority when a client has a tonic-clonic seizure?", options: ["Insert tongue blade", "Restrain limbs", "Time the seizure", "Suction secretions"], correctAnswer: 2, rationale: "Timing the seizure is critical. If >5 minutes, it’s status epilepticus. Do not restrain or insert objects. Protect head and turn to side." },
+      { id: 115, difficulty: 2, question: "A client with HIV has oral hairy leukoplakia. What causes this?", options: ["Candida", "HSV", "EBV", "HPV"], correctAnswer: 2, rationale: "Oral hairy leukoplakia is caused by Epstein-Barr virus (EBV) and appears as white, corrugated patches on the tongue in immunocompromised clients." },
+      { id: 116, difficulty: 2, question: "Which finding indicates effective treatment of heart failure?", options: ["Weight loss of 2 lbs overnight", "Decreased dyspnea", "Improved exercise tolerance", "All of the above"], correctAnswer: 3, rationale: "Diuresis (weight loss), reduced dyspnea, and increased activity tolerance indicate improved fluid status and cardiac output." },
+      { id: 117, difficulty: 3, question: "A client with multiple myeloma has bone pain. What complication is most likely?", options: ["Hypercalcemia", "Anemia", "Renal failure", "All of the above"], correctAnswer: 3, rationale: "Multiple myeloma causes bone destruction (pain, fractures), hypercalcemia, anemia (marrow infiltration), and renal failure (light chains)." },
+      { id: 118, difficulty: 3, question: "Which sign indicates neuroleptic malignant syndrome?", options: ["Hyperthermia", "Muscle rigidity", "Altered mental status", "All of the above"], correctAnswer: 3, rationale: "NMS is a life-threatening reaction to antipsychotics: hyperthermia, lead-pipe rigidity, AMS, and autonomic instability." },
+      { id: 119, difficulty: 2, question: "A client with asthma has PEFR 50% of personal best. What action is needed?", options: ["Continue routine meds", "Use rescue inhaler", "Seek emergency care", "Start oral steroids"], correctAnswer: 2, rationale: "PEFR 50–80% indicates moderate exacerbation. Use rescue inhaler (albuterol) and consider oral steroids. <50% requires ER visit." },
+      { id: 120, difficulty: 2, question: "Which finding indicates effective treatment of hypovolemic shock?", options: ["Heart rate 100 bpm", "BP 100/60 mmHg", "Urine output 40 mL/hr", "Capillary refill 3 seconds"], correctAnswer: 2, rationale: "Urine output >30 mL/hr is the most sensitive indicator of adequate renal perfusion and volume resuscitation." },
+      { id: 121, difficulty: 3, question: "A client with preeclampsia has a headache and blurred vision. What complication is suspected?", options: ["Eclampsia", "HELLP syndrome", "Cerebral edema", "Retinal detachment"], correctAnswer: 2, rationale: "Headache and visual changes in preeclampsia suggest cerebral edema or impending eclampsia. HELLP includes hemolysis, elevated LFTs, low platelets." },
+      { id: 122, difficulty: 2, question: "Which medication is used to reverse benzodiazepine overdose?", options: ["Naloxone", "Flumazenil", "Physostigmine", "Atropine"], correctAnswer: 1, rationale: "Flumazenil is a benzodiazepine antagonist. Use cautiously in mixed overdoses or chronic benzo users (risk of seizures)." },
+      { id: 123, difficulty: 2, question: "A client with cirrhosis has asterixis. What does this indicate?", options: ["Hepatic encephalopathy", "Hypocalcemia", "Parkinsonism", "Stroke"], correctAnswer: 0, rationale: "Asterixis (flapping tremor) is a classic sign of hepatic encephalopathy due to ammonia toxicity affecting the brain." },
+      { id: 124, difficulty: 3, question: "Which action is priority for a client with suspected aortic dissection?", options: ["Administer morphine", "Lower systolic BP to 100–120 mmHg", "Prepare for CT angiogram", "Give beta-blocker first"], correctAnswer: 3, rationale: "Beta-blockers (e.g., esmolol) are given first to reduce dP/dt (force of contraction), then vasodilators to lower BP. Goal: SBP 100–120." },
+      { id: 125, difficulty: 2, question: "A client with schizophrenia has negative symptoms. Which is an example?", options: ["Hallucinations", "Delusions", "Avolition", "Agitation"], correctAnswer: 2, rationale: "Negative symptoms: avolition (lack of motivation), alogia (poverty of speech), anhedonia, flat affect. Positive symptoms: hallucinations/delusions." },
+      { id: 126, difficulty: 2, question: "Which sign indicates effective treatment of hyperthyroidism?", options: ["Weight gain", "Decreased heart rate", "Reduced anxiety", "All of the above"], correctAnswer: 3, rationale: "Antithyroid drugs (methimazole) reduce metabolic rate, leading to weight gain, bradycardia, and improved mood/anxiety." },
+      { id: 127, difficulty: 3, question: "A client with DKA has serum glucose 200 mg/dL but anion gap 18. What should the nurse do?", options: ["Stop insulin infusion", "Continue insulin with dextrose", "Switch to subcutaneous insulin", "Hold insulin and monitor"], correctAnswer: 1, rationale: "Anion gap >12 indicates ongoing ketoacidosis. Continue IV insulin and add dextrose to prevent hypoglycemia while closing the gap." },
+      { id: 128, difficulty: 3, question: "Which finding indicates compartment syndrome in a child with a cast?", options: ["Pain with passive movement", "Swelling", "Pallor", "All of the above"], correctAnswer: 3, rationale: "Children may not verbalize pain well. Swelling, pallor, and pain with passive stretch are key indicators. Check capillary refill and sensation." },
+      { id: 129, difficulty: 2, question: "A client with HIV has CMV retinitis. Which medication is used?", options: ["Ganciclovir", "Acyclovir", "Valacyclovir", "Foscarnet"], correctAnswer: 0, rationale: "Ganciclovir is first-line for CMV infections (retinitis, colitis). Foscarnet is alternative for resistant cases." },
+      { id: 130, difficulty: 3, question: "Which action is priority when a client has a pulmonary embolism?", options: ["Administer oxygen", "Start heparin", "Prepare for thrombolytics", "All of the above"], correctAnswer: 3, rationale: "Oxygen for hypoxemia, anticoagulation (heparin) to prevent extension, and thrombolytics for massive PE with hemodynamic instability." },
+      { id: 131, difficulty: 2, question: "A client with Addison’s disease needs surgery. What is required?", options: ["Hold steroids", "Give stress-dose hydrocortisone", "Switch to prednisone", "Monitor sodium closely"], correctAnswer: 1, rationale: "Surgery is a major stressor. Stress-dose hydrocortisone (100mg IV q8h) is mandatory to prevent adrenal crisis." },
+      { id: 132, difficulty: 3, question: "Which sign indicates effective treatment of status asthmaticus?", options: ["PEFR >80% predicted", "Reduced wheezing", "Normal ABG", "All of the above"], correctAnswer: 3, rationale: "Resolution includes improved airflow (PEFR), reduced work of breathing, and normalized blood gases (pH, PaCO2)." },
+      { id: 133, difficulty: 3, question: "A client with leukemia has mucositis. Which intervention is priority?", options: ["Oral hygiene with soft brush", "Topical lidocaine", "Avoid acidic foods", "All of the above"], correctAnswer: 3, rationale: "Mucositis care: gentle oral hygiene, pain control (lidocaine viscous), and bland diet to prevent irritation and infection." },
+      { id: 134, difficulty: 3, question: "Which finding indicates hypocalcemia after thyroidectomy?", options: ["Chvostek’s sign", "Trousseau’s sign", "Tetany", "All of the above"], correctAnswer: 3, rationale: "Accidental parathyroid removal during thyroidectomy causes hypocalcemia. Signs include Chvostek’s, Trousseau’s, and carpopedal spasm." },
+      { id: 135, difficulty: 3, question: "A client with schizophrenia is on clozapine. Which finding requires immediate action?", options: ["Sore throat", "Weight gain", "Drowsiness", "Drooling"], correctAnswer: 0, rationale: "Sore throat, fever, or malaise may indicate agranulocytosis—a medical emergency. Check ANC immediately." },
+      { id: 136, difficulty: 3, question: "Which action is priority for a client with suspected stroke?", options: ["Administer aspirin", "Obtain CT scan", "Check glucose", "Elevate HOB"], correctAnswer: 2, rationale: "Hypoglycemia can mimic stroke. Check glucose first. Then CT to differentiate ischemic vs. hemorrhagic before giving aspirin or tPA." },
+      { id: 137, difficulty: 2, question: "A client with heart failure has crackles and dyspnea. What is the priority action?", options: ["Administer furosemide", "Apply oxygen", "Position in high Fowler’s", "All of the above"], correctAnswer: 3, rationale: "ABCs first: oxygen for hypoxia, position to ease breathing, then diuretics to reduce fluid overload." },
+      { id: 138, difficulty: 2, question: "Which sign indicates effective treatment of bacterial meningitis?", options: ["Afebrile", "Clear CSF", "Improved LOC", "All of the above"], correctAnswer: 3, rationale: "Clinical improvement includes defervescence, clearing CSF (decreased WBCs), and return of consciousness." },
+      { id: 139, difficulty: 2, question: "A client with HIV has wasting syndrome. What is the priority intervention?", options: ["High-calorie diet", "Appetite stimulants", "Treat underlying OIs", "All of the above"], correctAnswer: 3, rationale: "Wasting in HIV is multifactorial: treat OIs, provide nutritional support (high-calorie/protein), and consider appetite stimulants (megestrol)." },
+      { id: 140, difficulty: 3, question: "Which finding indicates magnesium sulfate toxicity?", options: ["Patellar reflex 2+", "Respirations 16/min", "Urinary output 40 mL/hr", "Loss of patellar reflex"], correctAnswer: 3, rationale: "Loss of deep tendon reflexes is the earliest sign of magnesium toxicity. Respiratory depression follows." },
+      { id: 141, difficulty: 2, question: "A client with Parkinson’s disease has freezing episodes. What strategy helps?", options: ["Visual cues (e.g., laser cane)", "Increase levodopa dose", "Physical therapy", "All of the above"], correctAnswer: 3, rationale: "Freezing is managed with sensory cues (visual, auditory), medication adjustment, and PT for gait training." },
+      { id: 142, difficulty: 1, question: "Which action is priority when a client has anaphylaxis?", options: ["Administer epinephrine IM", "Give diphenhydramine", "Apply oxygen", "Start IV fluids"], correctAnswer: 0, rationale: "Epinephrine is first-line and life-saving. Delay increases mortality. Give IM in mid-outer thigh immediately." },
+      { id: 143, difficulty: 2, question: "A client with cirrhosis has ascites. Which intervention is priority?", options: ["Sodium restriction", "Diuretics", "Paracentesis", "Albumin infusion"], correctAnswer: 0, rationale: "Sodium restriction (<2g/day) is foundational. Diuretics (spironolactone + furosemide) are added if needed. Paracentesis for tense ascites." },
+      { id: 144, difficulty: 3, question: "Which sign indicates effective treatment of sepsis?", options: ["Lactate <2 mmol/L", "MAP >65 mmHg", "Urine output >0.5 mL/kg/hr", "All of the above"], correctAnswer: 3, rationale: "Sepsis bundle goals: lactate clearance, MAP ≥65, and adequate urine output within 6 hours of recognition." },
+      { id: 145, difficulty: 3, question: "A client with schizophrenia has command hallucinations to harm others. What is the priority?", options: ["Implement safety precautions", "Notify provider", "Assess for plan/intent", "All of the above"], correctAnswer: 3, rationale: "Safety is paramount. Assess risk, implement 1:1 observation, notify provider, and consider PRN antipsychotics." },
+      { id: 146, difficulty: 2, question: "Which finding indicates hypovolemic shock in a postpartum client?", options: ["Tachycardia", "Hypotension", "Pale, cool skin", "All of the above"], correctAnswer: 3, rationale: "Postpartum hemorrhage causes hypovolemic shock: tachycardia, hypotension, and cool/clammy skin. Early sign is tachycardia." },
+      { id: 147, difficulty: 3, question: "A client with DKA has potassium 3.2 mEq/L. What should the nurse do before starting insulin?", options: ["Hold insulin", "Give potassium", "Start insulin with potassium", "Monitor ECG"], correctAnswer: 2, rationale: "Insulin drives K+ into cells, worsening hypokalemia. Potassium must be replaced (if <3.3) before or with insulin initiation." },
+      { id: 148, difficulty: 2, question: "Which action is priority for a client with suspected testicular cancer?", options: ["Schedule orchiectomy", "Order scrotal ultrasound", "Administer chemotherapy", "Provide emotional support"], correctAnswer: 1, rationale: "Scrotal ultrasound is the initial diagnostic test for testicular mass. Orchiectomy (not biopsy) is both diagnostic and therapeutic." },
+      { id: 149, difficulty: 2, question: "A client with myasthenia gravis has difficulty swallowing. What is the priority risk?", options: ["Aspiration", "Malnutrition", "Dehydration", "Weight loss"], correctAnswer: 0, rationale: "Bulbar weakness in myasthenia gravis impairs swallowing, increasing aspiration risk. Assess gag reflex and consider NPO status." },
+      { id: 150, difficulty: 2, question: "Which sign indicates effective treatment of preeclampsia?", options: ["BP <140/90", "Resolution of headache", "Urinary output >30 mL/hr", "All of the above"], correctAnswer: 3, rationale: "Preeclampsia management aims to control BP, prevent seizures (magnesium), and maintain organ perfusion (urine output). Delivery is definitive treatment." }
+    ];
+
+    // App State
+    let currentQuestionId = 1;
+    let answeredCount = 0;
+    let correctCount = 0;
+    let timeLeft = 300 * 60; // 300 minutes = 5 hours
+    let examFinished = false;
+    let timer;
+    let abilityEstimate = 0; // Starts at passing threshold
+
+    // NCLEX Parameters
+    const PASSING_THRESHOLD = 0;
+    const UPPER_BOUND = 1.5;   // Confidence to pass
+    const LOWER_BOUND = -1.5;  // Confidence to fail
+    const MIN_QUESTIONS = 85;
+    const MAX_QUESTIONS = 150;
+
+    // DOM Elements
+    const contentEl = document.getElementById('content');
+    const progressBarEl = document.getElementById('progress-bar');
+    const progressTextEl = document.getElementById('progress-text');
+    const timerEl = document.getElementById('timer');
+    const endExamBtn = document.getElementById('endExamBtn');
+
+    // Initialize Exam
+    function initExam() {
+      startTimer();
+      renderQuestion(currentQuestionId);
+      updateProgress();
+      endExamBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to end the exam early?')) {
+          finishExam();
+        }
+      });
+    }
+
+    // Timer Functions
+    function startTimer() {
+      timer = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) finishExam();
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timeLeft / 60).toString().padStart(3, '0');
+      const secs = (timeLeft % 60).toString().padStart(2, '0');
+      timerEl.textContent = `${mins}:${secs}`;
+      if (timeLeft < 1800) timerEl.classList.add('text-red-600'); // Last 30 mins
+    }
+
+    // Progress Functions
+    function updateProgress() {
+      const percent = (answeredCount / MAX_QUESTIONS) * 100;
+      progressBarEl.style.width = `${percent}%`;
+      progressTextEl.textContent = `${answeredCount}/${MAX_QUESTIONS}`;
+    }
+
+    // Render Question
+    function renderQuestion(id) {
+      const q = questions.find(q => q.id === id);
+      if (!q) return finishExam();
+
+      contentEl.innerHTML = `
+        <div class="fade-in">
+          <div class="flex items-start mb-4">
+            <div class="bg-primary text-white rounded-lg w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">
+              ${answeredCount + 1}
+            </div>
+            <h2 class="text-lg md:text-xl font-semibold text-gray-800">${q.question}</h2>
+          </div>
+          
+          <div class="space-y-3 mt-6">
+            ${q.options.map((opt, idx) => `
+              <button 
+                onclick="handleAnswer(${idx})"
+                class="w-full text-left p-4 rounded-lg border-2 border-gray-200 hover:border-primary hover:bg-purple-50 transition-colors"
+                id="opt-${idx}">
+                <div class="flex items-start">
+                  <div class="bg-gray-200 text-gray-800 rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                    ${String.fromCharCode(65 + idx)}
+                  </div>
+                  <span>${opt}</span>
+                </div>
+              </button>
+            `).join('')}
+          </div>
+          
+          <div class="mt-6 text-sm text-gray-600 italic">
+            <i class="fas fa-comment-alt mr-2"></i>
+            Think of this as a first date. The more confidently you answer, the sooner we'll know if you're "marriage material" for nursing!
+          </div>
+        </div>
+      `;
+    }
+
+    // Handle Answer - ADAPTIVE LOGIC
+    function handleAnswer(selectedIndex) {
+      if (examFinished) return;
+
+      const q = questions.find(q => q.id === currentQuestionId);
+      const isCorrect = selectedIndex === q.correctAnswer;
+      const questionDifficulty = q.difficulty - 2; // Convert to -1,0,1 scale
+
+      // Update stats
+      answeredCount++;
+      if (isCorrect) {
+        correctCount++;
+        // If answered correctly, increase ability estimate
+        abilityEstimate += (1 - abilityEstimate / 10) * (questionDifficulty + 1);
+      } else {
+        // If answered incorrectly, decrease ability estimate
+        abilityEstimate -= (1 + abilityEstimate / 10) * (questionDifficulty + 1);
+      }
+
+      // Disable buttons and show feedback
+      document.querySelectorAll('.border-2').forEach(btn => btn.disabled = true);
+      
+      // Highlight correct/incorrect
+      document.getElementById(`opt-${q.correctAnswer}`).classList.remove('border-gray-200', 'hover:border-primary', 'hover:bg-purple-50');
+      document.getElementById(`opt-${q.correctAnswer}`).classList.add('border-green-500', 'bg-green-50');
+      
+      if (!isCorrect) {
+        document.getElementById(`opt-${selectedIndex}`).classList.remove('border-gray-200', 'hover:border-primary', 'hover:bg-purple-50');
+        document.getElementById(`opt-${selectedIndex}`).classList.add('border-red-500', 'bg-red-50');
+      }
+
+      // Show rationale
+      const feedback = document.createElement('div');
+      feedback.className = `mt-6 p-4 rounded-lg ${isCorrect ? 'bg-green-100 border border-green-300' : 'bg-red-100 border border-red-300'}`;
+      feedback.innerHTML = `
+        <div class="flex items-start">
+          <i class="fas ${isCorrect ? 'fa-check-circle text-green-700' : 'fa-exclamation-triangle text-red-700'} mt-1 mr-3"></i>
+          <div>
+            <h3 class="font-bold ${isCorrect ? 'text-green-800' : 'text-red-800'}">${isCorrect ? 'Correct!' : 'Incorrect'}</h3>
+            <p class="mt-2 text-gray-700">${q.rationale}</p>
+          </div>
+        </div>
+      `;
+      contentEl.appendChild(feedback);
+
+      // Check if exam should end
+      let shouldEnd = false;
+      let result = null;
+
+      // Minimum 85 questions
+      if (answeredCount >= MIN_QUESTIONS) {
+        if (abilityEstimate >= UPPER_BOUND) {
+          shouldEnd = true;
+          result = 'pass';
+        } else if (abilityEstimate <= LOWER_BOUND) {
+          shouldEnd = true;
+          result = 'fail';
+        }
+      }
+
+      // Maximum 150 questions
+      if (answeredCount >= MAX_QUESTIONS) {
+        shouldEnd = true;
+        result = abilityEstimate >= PASSING_THRESHOLD ? 'pass' : 'fail';
+      }
+
+      if (shouldEnd) {
+        setTimeout(() => finishExam(result), 3000);
+      } else {
+        // Select next question based on current ability
+        let nextDifficulty;
+        if (abilityEstimate > 0.5) {
+          nextDifficulty = 3; // Hard
+        } else if (abilityEstimate < -0.5) {
+          nextDifficulty = 1; // Easy
+        } else {
+          nextDifficulty = 2; // Medium
+        }
+
+        // Find next question of appropriate difficulty that hasn't been used
+        const unusedQuestions = questions.filter(q => 
+          q.difficulty === nextDifficulty && 
+          q.id !== currentQuestionId
+        );
+        
+        // If none available, pick any unused
+        if (unusedQuestions.length === 0) {
+          const allUnused = questions.filter(q => q.id !== currentQuestionId);
+          currentQuestionId = allUnused.length > 0 ? allUnused[0].id : (currentQuestionId % 150) + 1;
+        } else {
+          // Pick randomly from available
+          const randomIndex = Math.floor(Math.random() * unusedQuestions.length);
+          currentQuestionId = unusedQuestions[randomIndex].id;
+        }
+
+        setTimeout(() => {
+          renderQuestion(currentQuestionId);
+          updateProgress();
+        }, 3000);
+      }
+    }
+
+    // Finish Exam
+    function finishExam(result = null) {
+      examFinished = true;
+      clearInterval(timer);
+
+      // Determine result if not provided
+      if (result === null) {
+        result = abilityEstimate >= PASSING_THRESHOLD ? 'pass' : 'fail';
+      }
+
+      const passed = result === 'pass';
+      const score = Math.round((correctCount / answeredCount) * 100);
+
+      contentEl.innerHTML = `
+        <div class="text-center py-8 fade-in">
+          <div class="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 ${passed ? 'bg-green-100' : 'bg-red-100'}">
+            <i class="fas ${passed ? 'fa-ring text-green-600 text-5xl' : 'fa-times-circle text-red-600 text-5xl'}"></i>
+          </div>
+          
+          <h2 class="text-2xl font-bold mb-4 ${passed ? 'text-green-700' : 'text-red-700'}">
+            ${passed ? 'Congratulations! You Passed!' : 'You Did Not Pass'}
+          </h2>
+          
+          <div class="bg-gray-50 rounded-xl p-5 max-w-md mx-auto mb-6">
+            <div class="grid grid-cols-2 gap-4 text-left">
+              <div class="font-medium">Questions Answered:</div>
+              <div class="text-right">${answeredCount}</div>
+              
+              <div class="font-medium">Correct Answers:</div>
+              <div class="text-right">${correctCount} (${score}%)</div>
+              
+              <div class="font-medium">Time Used:</div>
+              <div class="text-right">${formatTime(18000 - timeLeft)}</div>
+              
+              <div class="font-medium">Ability Estimate:</div>
+              <div class="text-right">${abilityEstimate.toFixed(2)}</div>
+            </div>
+          </div>
+          
+          <p class="text-gray-700 mb-8 px-4">
+            ${passed 
+              ? "Just like a successful first date leading to engagement, your consistent performance showed you're ready for the nursing profession!" 
+              : "Like a date that didn't lead to marriage, the evidence wasn't strong enough to confirm you're ready. Keep studying and try again!"}
+          </p>
+          
+          <button 
+            onclick="location.reload()" 
+            class="bg-primary hover:bg-indigo-800 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-lg">
+            Restart Exam
+          </button>
+        </div>
+      `;
+    }
+
+    // Format Time
+    function formatTime(seconds) {
+      const totalSecs = 18000 - seconds; // Total time minus remaining
+      const mins = Math.floor(totalSecs / 60).toString().padStart(3, '0');
+      const secs = (totalSecs % 60).toString().padStart(2, '0');
+      return `${mins}:${secs}`;
+    }
+
+    // Start the exam
+    window.onload = initExam;
+    window.handleAnswer = handleAnswer; // Make function globally accessible
+  </script>
+</body>
+</html>
